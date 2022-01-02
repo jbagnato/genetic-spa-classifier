@@ -12,4 +12,4 @@ def openConfig(filepath: str) -> dict:
 
         return obj
 
-    raise Exception(f"Can not find required config file in path: {filepath}")
+    raise ValueError(f"Can not find required config file in path: {filepath}")

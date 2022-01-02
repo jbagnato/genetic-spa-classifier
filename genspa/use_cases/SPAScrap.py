@@ -9,11 +9,13 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException,
     ElementClickInterceptedException, WebDriverException
 
 from genspa.constants import CHROMIUM_PATH, DISK_CACHE
+from genspa.util.logger_utils import getLogger
 
 
 class SPAScrap:
 
     def __init__(self):
+        self.logger = getLogger()
         self.url = 'https://www.marieclaire.com/fashion/g1898/best-online-shopping/'
 
     def domain_name(self, url):
@@ -34,7 +36,7 @@ class SPAScrap:
                 print(aUrl)
                 urls.append(aUrl)
 
-        print(f"Founded {len(urls)} urls")
+        self.logger.info(f"Founded {len(urls)} urls")
         return urls
 
     def captureWebsiteSceen(self, webs_to_visit=[], delay=0.7, directory="./screenshots"):
@@ -59,7 +61,7 @@ class SPAScrap:
 
         for i, web in enumerate(webs_to_visit):
             try:
-                print(f"{i} Getting Screnshot from: {web}")
+                self.logger.debug(f"{i} Getting Screnshot from: {web}")
 
                 driver.get(web)
                 #el = driver.find_element_by_tag_name('body')
@@ -74,11 +76,11 @@ class SPAScrap:
 
                 driver.get_screenshot_as_file(f"{directory}/{self.domain_name(web)}.png")
             except (TimeoutException, WebDriverException):
-                print(f"Fail to do screenshots of {web}")
+                self.logger.error(f"Fail to do screenshots of {web}")
 
         driver.quit()
 
-        print("end...")
+        self.logger.debug("end...")
 
     def avoid_cookies(self, driver):
         driver.add_cookie({"name": "_y", "value": '5dcace16-d4e9-4e00-9729-47e2bdeb843c'})

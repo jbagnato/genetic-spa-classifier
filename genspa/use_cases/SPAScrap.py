@@ -8,6 +8,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementNotInteractableException, \
     ElementClickInterceptedException, WebDriverException
 
+from genspa.constants import CHROMIUM_PATH, DISK_CACHE
+
 
 class SPAScrap:
 
@@ -37,28 +39,28 @@ class SPAScrap:
 
     def captureWebsiteSceen(self, webs_to_visit=[], delay=0.7, directory="./screenshots"):
         options = webdriver.ChromeOptions()
-        options.add_argument("headless")  # pass headless argument to the options
-        #options.binary_location = '/Users/jbagnato/chromedriver'  # location of the Chrome Browser binary
+        options.add_argument("--headless")  # pass headless argument to the options
+        #options.binary_location = '/Users/usename/chromedriver'  # location of the Chrome Browser binary
         options.add_argument("disable-infobars")  # disabling infobars
         options.add_argument("--disable-extensions")  # disabling extensions
         #options.add_argument("--disable-gpu")  # applicable to windows os only
         options.add_argument("--disable-dev-shm-usage")  # overcome limited resource problems
         options.add_argument("--no-sandbox")  # Bypass OS security model
-        driver = webdriver.Chrome(executable_path='/Users/jbagnato/chromedriver', chrome_options=options)
+        options.add_argument('--disk-cache-dir={}'.format(DISK_CACHE))
+        options.add_argument('--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36')
+        options.add_argument('--hide-scrollbars')
+
+        driver = webdriver.Chrome(executable_path=CHROMIUM_PATH, chrome_options=options)
         #driver = webdriver.Safari(quiet=True)
         width = 1024
         height = width*4
         driver.set_window_size(width, height)
+        driver.set_page_load_timeout(6)
 
         for i, web in enumerate(webs_to_visit):
             try:
                 print(f"{i} Getting Screnshot from: {web}")
-                """driver.add_cookie(
-                    {'_y': '5dcace16-d4e9-4e00-9729-47e2bdeb843c', '_s': 'dacf316b-1b51-4668-a6ff-fd7684656e44',
-                     '_shopify_y': '5dcace16-d4e9-4e00-9729-47e2bdeb843c',
-                     '_shopify_s': 'dacf316b-1b51-4668-a6ff-fd7684656e44',
-                     '_ju_dm': 'cookie', '_ju_dn': 1})
-                """
+
                 driver.get(web)
                 #el = driver.find_element_by_tag_name('body')
                 sleep(delay)
@@ -72,13 +74,20 @@ class SPAScrap:
 
                 driver.get_screenshot_as_file(f"{directory}/{self.domain_name(web)}.png")
             except (TimeoutException, WebDriverException):
-                print("Cant do screenshot of " + web)
+                print(f"Fail to do screenshots of {web}")
 
         driver.quit()
 
         print("end...")
 
     def avoid_cookies(self, driver):
+        driver.add_cookie({"name": "_y", "value": '5dcace16-d4e9-4e00-9729-47e2bdeb843c'})
+        driver.add_cookie({"name": '_s', "value": 'dacf316b-1b51-4668-a6ff-fd7684656e44'})
+        driver.add_cookie({"name": '_shopify_y', "value": '5dcace16-d4e9-4e00-9729-47e2bdeb843c'})
+        driver.add_cookie({"name": '_shopify_s', "value": 'dacf316b-1b51-4668-a6ff-fd7684656e44'})
+        driver.add_cookie({"name": '_ju_dm', "value": 'cookie'})
+        driver.add_cookie({"name": '_ju_dn', "value": '1'})
+
         toclick = ['*[@id="uc-btn-accept-banner"]', 'button[class="wt-mb-xs-0"]','a[@id="AVyes"]']
         for aclick in toclick:
             try:

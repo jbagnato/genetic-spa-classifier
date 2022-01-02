@@ -1,6 +1,7 @@
 import os
 from genspa.use_cases.SPAScrap import SPAScrap
 from genspa._argument_parser import parse_args
+from genspa.util.json_utils import openConfig
 from genspa.util.logger_utils import getLogger
 
 
@@ -23,8 +24,17 @@ def main():
         args.data_access = DATAACCESS
 
     if task == "scrap":
+        scrap = SPAScrap()
+        if args.jsonFile:
+            settings = openConfig(args.jsonFile)
+            urls = settings.get('sites')
+        else:
+            #urls = scrap.scrap_urls()
+            pass
+        scrap.captureWebsiteSceen(urls, delay=0.5)
+    elif task == "train":
         facade = SPAScrap()
-    elif task == "json":
+    elif task == "interactive":
         from genspa.use_cases.InteractiveCommandLine import InteractiveCommandLine
         ic = InteractiveCommandLine()
         ic.run(args.name)

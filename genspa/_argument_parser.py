@@ -25,13 +25,13 @@ subparsers = parser.add_subparsers(dest="task")
 subparsers.required = True
 # Preprocessing subparser
 preprocess_parser = subparsers.add_parser("scrap", help="visit list of websites and take snapshot.")
-preprocess_parser.add_argument("size", choices=["full", "thumbnail"], help="size of screenshot.")
-preprocess_parser.add_argument("sample", nargs='?', default="all", help="Optional. Specify a sample.")
+preprocess_parser.add_argument("jsonFile", nargs='?', default=None, help="Optional. Specify a json settings file.")
 
 # Preprocessing subparser
 preprocess_parser = subparsers.add_parser("train", help="run GA")
 preprocess_parser.add_argument("settingsFile", help="JSON settings file.")
 
+preprocess_parser = subparsers.add_parser("interactive", help="Interactive command line utility")
 
 def parse_args(*args, **kwargs):
   return parser.parse_args(*args, **kwargs)

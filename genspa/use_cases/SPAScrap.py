@@ -101,7 +101,8 @@ class SPAScrap:
             except (NoSuchElementException, ElementNotInteractableException, ElementClickInterceptedException):
                 pass
 
-        texts = ['Accept','Accept Cookies','Accept All','Accept All Cookies', 'Aceptar todo','Autoriser tous les cookies','Aceptar','Got it']
+        texts = ['Accept','Accept Cookies','Accept All','Accept All Cookies', 'Aceptar todo','Autoriser tous les cookies',
+                 'Aceptar','Got it']
         for btn_text in texts:
             try:
                 #WebDriverWait(driver, 1).until(expected_conditions.visibility_of_element_located((By.XPATH, f"//button[text()='{btn_text}']")))

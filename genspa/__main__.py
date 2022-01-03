@@ -1,4 +1,9 @@
 import os
+
+import cv2
+
+from genspa.model.genetic_spa import GeneticAlgorithmSPA
+from genspa.model.webpage import Webpage
 from genspa.use_cases.SPAScrap import SPAScrap
 from genspa._argument_parser import parse_args
 from genspa.util.json_utils import openConfig
@@ -19,9 +24,6 @@ def main():
     ENVIRONMENT = os.getenv('ENVIRONMENT')
     if ENVIRONMENT is not None:
         args.environment = ENVIRONMENT
-    DATAACCESS = os.getenv('DATAACCESS')
-    if DATAACCESS is not None:
-        args.data_access = DATAACCESS
 
     if task == "scrap":
         scrap = SPAScrap()
@@ -38,7 +40,22 @@ def main():
 
         scrap.captureWebsiteSceen(urls, delay=0.5)
     elif task == "train":
-        facade = SPAScrap()
+        #TODO: read config from json
+        CROSSOVER_RATE = 0.7
+        MUTATION_RATE = 0.001
+        POP_SIZE = 200
+        CHROMO_LENGTH = 10
+        webimage = cv2.imread(args.image)
+        web = Webpage(webimage)
+        algo = GeneticAlgorithmSPA(web, POP_SIZE, CROSSOVER_RATE, MUTATION_RATE, CHROMO_LENGTH)
+        for i in range(1000):
+            algo.epoch()
+            if i % 100 == 0:
+                algo.render()
+
+        logger.info(f"FINAL SCORE: {algo.best_fitness_score}")
+        algo.render()
+
     elif task == "interactive":
         from genspa.use_cases.InteractiveCommandLine import InteractiveCommandLine
         ic = InteractiveCommandLine()

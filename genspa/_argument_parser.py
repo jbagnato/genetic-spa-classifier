@@ -30,6 +30,7 @@ preprocess_parser.add_argument("jsonFile", nargs='?', default="basic", help="Opt
 # Preprocessing subparser
 preprocess_parser = subparsers.add_parser("train", help="run GA")
 preprocess_parser.add_argument("settingsFile", help="JSON settings file.")
+preprocess_parser.add_argument("image", help="path to site PNG image.")
 
 preprocess_parser = subparsers.add_parser("interactive", help="Interactive command line utility")
 

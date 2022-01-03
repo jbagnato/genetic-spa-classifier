@@ -8,6 +8,7 @@ class Chromosome:
         self.component = component
         self.top = top
         self.height = height_px
+        self.score = -1
 
     """depending on the component, this function will calculate the value of fitness
     on the part of the image it is situated"""
@@ -27,9 +28,12 @@ class Chromosome:
 
         cropped = site_image[top_anchor:bottom_anchor, 0:int(iw)]
 
-        score = self.scoreComponent(cropped)
+        if self.score > 0:
+            return self.score
 
-        return score
+        self.score = self.scoreComponent(cropped)
+
+        return self.score
 
     def get_enum_component(self, num):
         switch = Component.__members__

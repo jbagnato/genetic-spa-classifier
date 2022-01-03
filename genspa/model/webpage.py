@@ -25,7 +25,7 @@ class Webpage:
 
             #TODO: validate not to have more than 1 header, and other rules that wont add score
 
-            score += chromo.fitness(self.site_image)
+            score += chromo.fitness(self.site_image.copy())
             travel_px += chromo.height
 
         return score

@@ -19,3 +19,4 @@ class Genome:
     def reset(self):
         self.components = list()
         self.fitness = 0.0
+        return self

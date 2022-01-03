@@ -53,6 +53,8 @@ class GeneticAlgorithmSPA:
                 chromo2 = mum.components[i]
                 baby2.components.append(chromo2)
 
+        return baby1, baby2
+
     def roulette_wheel_selection(self) -> Genome:
         slice = random.randint(0,100)/100 * self.total_fitness_score
         total = 0.0

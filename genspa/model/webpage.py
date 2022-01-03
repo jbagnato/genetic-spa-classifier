@@ -1,3 +1,5 @@
+import random
+
 import cv2
 
 from genspa.model.genome import Genome
@@ -34,25 +36,24 @@ class Webpage:
 
         # iterate chromosomas and draw each rectangle and color
         for chromo in path_list.components:
-            top_anchor = int(self.height - chromo.top)
+            top_anchor = chromo.top  #int(self.height - chromo.top)
             if top_anchor <= 0:
                 top_anchor = 0
 
-            bottom_anchor = int(top_anchor - chromo.height)
-            if bottom_anchor <= 0:
-                bottom_anchor = 0
+            bottom_anchor = int(top_anchor + chromo.height)
+            if bottom_anchor > self.height:
+                bottom_anchor = self.height
 
-            color = (0, 0, 255)
-            thickness = 4
-            cv2.rectangle(image, (0, self.width), (bottom_anchor, top_anchor), color, thickness)
+            color = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
+            thickness = 14
+            cv2.rectangle(image, (0+thickness, top_anchor+thickness), (self.width-thickness, bottom_anchor-thickness),  color, thickness)
             font = cv2.FONT_HERSHEY_SIMPLEX
             # fontScale
-            fontScale = 1
-            org = (10, bottom_anchor + 10)
-            image = cv2.putText(image, str(chromo.component) , org, font,
-                                fontScale, color, thickness, cv2.LINE_AA)
+            fontScale = 3
+            org = (30, bottom_anchor - 30)
+            image = cv2.putText(image, str(chromo.component.name) , org, font, fontScale, color, thickness, cv2.LINE_AA)
 
         cv2.namedWindow('Image', cv2.WINDOW_GUI_NORMAL)  # WINDOW_AUTOSIZE WINDOW_NORMAL
         cv2.imshow("Image", image)
         cv2.waitKey(int(wait_seconds))
-
+        return image

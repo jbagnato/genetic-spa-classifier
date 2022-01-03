@@ -10,7 +10,7 @@ class Genome:
         self.components = list()
         self.fitness = 0.0
         for i in range(max_components):
-            chromo = Chromosome(random.choice(list(Component)), top=(height_px/max_components)*i)
+            chromo = Chromosome(random.choice(list(Component)), top = (int(height_px/max_components)*i), height_px=int(height_px/max_components))
             self.components.append(chromo)
 
     def set_fitness(self, value:float):

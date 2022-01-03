@@ -98,6 +98,7 @@ class GeneticAlgorithmSPA:
         self.genomas = baby_genomes
         self.generation += 1
 
-    def render(self, wait_seconds=1):
-        self.webpage.render(self.genomas[self.fittest_genome], wait_seconds)
-
+    def render(self, wait_seconds=1, save=False):
+        img = self.webpage.render(self.genomas[self.fittest_genome], wait_seconds)
+        if save:
+            cv2.imwrite('output.png', img)

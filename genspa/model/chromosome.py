@@ -17,15 +17,15 @@ class Chromosome:
         ih = site_image.shape[0]
         iw = site_image.shape[1]
 
-        top_anchor = int(ih - self.top)
+        top_anchor = self.top  #int(ih - self.top)
         if top_anchor <= 0:
             return 0.0
 
-        bottom_anchor = int(top_anchor - self.height)
-        if bottom_anchor <= 0:
-            bottom_anchor = 0
+        bottom_anchor = int(top_anchor + self.height)
+        if bottom_anchor > ih:
+            bottom_anchor = ih
 
-        cropped = site_image[bottom_anchor:top_anchor, 0:int(iw)]
+        cropped = site_image[top_anchor:bottom_anchor, 0:int(iw)]
 
         score = self.scoreComponent(cropped)
 

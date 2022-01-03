@@ -47,7 +47,7 @@ def main():
         MUTATION_RATE = 0.001
         POP_SIZE = 200
         CHROMO_LENGTH = 10
-        EPOCHS = 60
+        EPOCHS = 100
         infor_every = EPOCHS / 50
         img_dir = "/Users/jbagnato/github-folders/genetic-spa-classifier/screenshots/"
         webimage = cv2.imread(img_dir + args.image)
@@ -60,12 +60,12 @@ def main():
             for i in range(EPOCHS):
                 algo.epoch()
                 if i % infor_every == 0:
-                    algo.render()
+                    algo.render(2)
                     bar.text(f"TOTAL SCORE: {algo.total_fitness_score}")
                 bar()
 
         logger.info(f"FINAL SCORE: {algo.best_fitness_score}")
-        algo.render()
+        algo.render(save=True)
         cv2.destroyAllWindows()
 
     elif task == "interactive":
@@ -74,6 +74,7 @@ def main():
         ic.run(args.name)
     else:
         logger.error(f"No valid task: '{task}")
+
 
 if __name__ == "__main__":
     main()

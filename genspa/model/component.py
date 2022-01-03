@@ -10,7 +10,7 @@ class Component(IntEnum):
     MENU_HORIZONTAL = 101
     SIDE_MENU = 102
     FILTERS_MENU = 103
-    TOP_BANNER = 104 # news or promotion
+    BANNER = 104 # news or promotion
 
 
     # BODY 200

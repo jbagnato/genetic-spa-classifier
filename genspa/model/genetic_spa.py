@@ -1,5 +1,7 @@
 import cv2
 
+from alive_progress import alive_bar
+
 from genspa.model.chromosome import Chromosome
 from genspa.model.component import Component
 from genspa.model.genome import Genome
@@ -29,7 +31,12 @@ class GeneticAlgorithmSPA:
         for i, chromo in enumerate(genoma.components):
             if random.randint(0,100)/100 < self.mutation_rate:
                 #flip the bit!
-                newchromo = Chromosome(random.choice(list(Component)), top=chromo.top, height_px=chromo.height)
+                newchromo = Chromosome(random.choice(list(Component)),
+                                       top=chromo.top,
+                                       height_px=chromo.height,
+                                       position=chromo.position,
+                                       prev_chromo=chromo.prev_chromo,
+                                       newchromo=chromo.next_chromo)
                 genoma.components[i] = newchromo
 
     def crossover(self, mum:Genome, dad:Genome) -> (Genome, Genome):
@@ -87,15 +94,18 @@ class GeneticAlgorithmSPA:
         new_babies = 0
         baby_genomes = list()
 
-        while new_babies < self.population_size:
-            mum = self.roulette_wheel_selection()
-            dad = self.roulette_wheel_selection()
-            baby1, baby2 = self.crossover(mum, dad)
-            self.mutate(baby1)
-            self.mutate(baby2)
-            baby_genomes.append(baby1)
-            baby_genomes.append(baby2)
-            new_babies += 2
+        with alive_bar(int(self.population_size/2), title='Generation', bar='circles', spinner='twirls') as bar2:
+            while new_babies < self.population_size:
+                mum = self.roulette_wheel_selection()
+                dad = self.roulette_wheel_selection()
+                baby1, baby2 = self.crossover(mum, dad)
+                self.mutate(baby1)
+                self.mutate(baby2)
+                baby_genomes.append(baby1)
+                baby_genomes.append(baby2)
+                new_babies += 2
+                bar2.text(f"GENOMA BEST SCORE: {self.best_fitness_score}")
+                bar2()
 
         self.genomas = baby_genomes
         self.generation += 1

@@ -1,17 +1,20 @@
 import random
 
 import cv2
+import imutils
 
 from genspa.model.genome import Genome
 
 
 class Webpage:
 
-    def __init__(self, site_image, width_px=None, height_px=None):
-        self.site_image = site_image
+    def __init__(self, site_image, width_px=None, height_px=None, scale=1):
+        self.scale = scale
+        resized = imutils.resize(site_image, width=int(site_image.shape[1] * scale))
+        self.site_image = resized
         if not width_px:
-            height_px = site_image.shape[0]
-            width_px = site_image.shape[1]
+            height_px = resized.shape[0]
+            width_px = resized.shape[1]
         self.width = width_px
         self.height = height_px
 
@@ -25,7 +28,7 @@ class Webpage:
 
             #TODO: validate not to have more than 1 header, and other rules that wont add score
 
-            score += chromo.fitness(self.site_image.copy())
+            score += chromo.fitness(self.site_image.copy(),scale=self.scale)
             travel_px += chromo.height
 
         return score
@@ -45,11 +48,11 @@ class Webpage:
                 bottom_anchor = self.height
 
             color = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-            thickness = 14
-            cv2.rectangle(image, (0+thickness, top_anchor+thickness), (self.width-thickness, bottom_anchor-thickness),  color, thickness)
+            thickness = int(14*self.scale)
+            cv2.rectangle(image, (0+thickness, top_anchor+thickness), (self.width-thickness, bottom_anchor-thickness), color, thickness)
             font = cv2.FONT_HERSHEY_SIMPLEX
             # fontScale
-            fontScale = 3
+            fontScale = max(int(3*self.scale),1)
             org = (30, bottom_anchor - 30)
             image = cv2.putText(image, str(chromo.component.name) , org, font, fontScale, color, thickness, cv2.LINE_AA)
 

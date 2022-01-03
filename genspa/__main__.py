@@ -4,6 +4,7 @@ import cv2
 
 from alive_progress import alive_bar
 
+from genspa.constants import IMG_DIR
 from genspa.model.genetic_spa import GeneticAlgorithmSPA
 from genspa.model.webpage import Webpage
 from genspa.use_cases.SPAScrap import SPAScrap
@@ -42,29 +43,35 @@ def main():
 
         scrap.captureWebsiteSceen(urls, delay=0.5)
     elif task == "train":
+        logger.info(f"STARTING SPA GENETIC ALGORITHM")
         #TODO: read config from json
         CROSSOVER_RATE = 0.7
         MUTATION_RATE = 0.001
-        POP_SIZE = 200
-        CHROMO_LENGTH = 10
+        POP_SIZE = 100
+        CHROMO_LENGTH = 9
         EPOCHS = 100
-        infor_every = EPOCHS / 50
-        img_dir = "/Users/jbagnato/github-folders/genetic-spa-classifier/screenshots/"
-        webimage = cv2.imread(img_dir + args.image)
+        infor_every = EPOCHS / 25
+
+        scale = 0.3
+
+        webimage = cv2.imread(IMG_DIR + args.image)
         if webimage is None:
             logger.error(f"Can not find image file {args.image}")
             return
-        web = Webpage(webimage)
+        web = Webpage(webimage, scale=scale)
+
+        logger.info(f"IMAGE readed: {web.width}px x {web.height}px")
+
         algo = GeneticAlgorithmSPA(web, POP_SIZE, CROSSOVER_RATE, MUTATION_RATE, CHROMO_LENGTH)
-        with alive_bar(EPOCHS) as bar:
+        with alive_bar(EPOCHS, title='Processing') as bar:
             for i in range(EPOCHS):
                 algo.epoch()
                 if i % infor_every == 0:
-                    algo.render(2)
-                    bar.text(f"TOTAL SCORE: {algo.total_fitness_score}")
+                    algo.render(wait_seconds=2)
+                    bar.text(f"GENERATION SCORE: {algo.total_fitness_score}")
                 bar()
 
-        logger.info(f"FINAL SCORE: {algo.best_fitness_score}")
+        logger.info(f"GENOMA FINAL BEST SCORE: {algo.best_fitness_score}")
         algo.render(save=True)
         cv2.destroyAllWindows()
 

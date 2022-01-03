@@ -1,3 +1,5 @@
+import cv2
+
 from genspa.model.chromosome import Chromosome
 from genspa.model.component import Component
 from genspa.model.genome import Genome
@@ -86,7 +88,7 @@ class GeneticAlgorithmSPA:
         while new_babies < self.population_size:
             mum = self.roulette_wheel_selection()
             dad = self.roulette_wheel_selection()
-            baby1, baby2 = self.crossover(mum,dad)
+            baby1, baby2 = self.crossover(mum, dad)
             self.mutate(baby1)
             self.mutate(baby2)
             baby_genomes.append(baby1)
@@ -96,5 +98,6 @@ class GeneticAlgorithmSPA:
         self.genomas = baby_genomes
         self.generation += 1
 
-    def render(self):
-        pass
+    def render(self, wait_seconds=1):
+        self.webpage.render(self.genomas[self.fittest_genome], wait_seconds)
+

@@ -2,6 +2,8 @@ import os
 
 import cv2
 
+from alive_progress import alive_bar
+
 from genspa.model.genetic_spa import GeneticAlgorithmSPA
 from genspa.model.webpage import Webpage
 from genspa.use_cases.SPAScrap import SPAScrap
@@ -45,16 +47,26 @@ def main():
         MUTATION_RATE = 0.001
         POP_SIZE = 200
         CHROMO_LENGTH = 10
-        webimage = cv2.imread(args.image)
+        EPOCHS = 60
+        infor_every = EPOCHS / 50
+        img_dir = "/Users/jbagnato/github-folders/genetic-spa-classifier/screenshots/"
+        webimage = cv2.imread(img_dir + args.image)
+        if webimage is None:
+            logger.error(f"Can not find image file {args.image}")
+            return
         web = Webpage(webimage)
         algo = GeneticAlgorithmSPA(web, POP_SIZE, CROSSOVER_RATE, MUTATION_RATE, CHROMO_LENGTH)
-        for i in range(1000):
-            algo.epoch()
-            if i % 100 == 0:
-                algo.render()
+        with alive_bar(EPOCHS) as bar:
+            for i in range(EPOCHS):
+                algo.epoch()
+                if i % infor_every == 0:
+                    algo.render()
+                    bar.text(f"TOTAL SCORE: {algo.total_fitness_score}")
+                bar()
 
         logger.info(f"FINAL SCORE: {algo.best_fitness_score}")
         algo.render()
+        cv2.destroyAllWindows()
 
     elif task == "interactive":
         from genspa.use_cases.InteractiveCommandLine import InteractiveCommandLine

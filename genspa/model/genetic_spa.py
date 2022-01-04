@@ -37,14 +37,14 @@ class GeneticAlgorithmSPA:
                 self.logger.info("Mutation")
                 #flip the bit!
 
-                randomOffset = random.randint(0, int(self.webpage.height / 100))
+                #randomOffset = random.randint(0, int(self.webpage.height / 100))
                 randomIncrement = random.randint(0, int(self.webpage.height / self.components_length))
 
-                randomOperation = random.randint(0,100)
+                """randomOperation = random.randint(0,100)
                 if (randomOperation>50):
                     randomOffset = -1*randomOffset
-                    if chromo.top + randomOffset <=0:
-                        randomOffset = 0
+                    if chromo.top + randomOffset <= 0:
+                        randomOffset = 0"""
 
                 randomOperation = random.randint(0,100)
                 if (randomOperation>50):
@@ -53,11 +53,22 @@ class GeneticAlgorithmSPA:
                         randomIncrement = 0
 
                 newchromo = Chromosome(random.choice(list(Component)),
-                                       top=chromo.top + randomOffset,
+                                       top=chromo.top, #+ randomOffset,
                                        height_px=chromo.height + randomIncrement,
                                        position=chromo.position,
                                        prev_chromo=chromo.prev_chromo,
                                        next_chromo=chromo.next_chromo)
+
+                # adjust the next chromos top and height position
+                nchrom = chromo.next_chromo
+                if nchrom:
+                    prevtop = nchrom.top
+                    nchrom.top = chromo.top + chromo.height + randomIncrement
+                    if nchrom.top >= prevtop:
+                        nchrom.height = nchrom.height - (nchrom.top - prevtop)
+                    else:
+                        nchrom.height = nchrom.height + (prevtop -nchrom.top)
+
                 genoma.components[i] = newchromo
 
     def crossover(self, mum:Genome, dad:Genome) -> (Genome, Genome):
@@ -76,18 +87,29 @@ class GeneticAlgorithmSPA:
             comps1=list()
             comps2=list()
             for i in range(self.components_length):
+                lastTop1 = 0
+                lastTop2 = 0
                 if i < cut:
                     chromo1 = mum.components[i]
                     comps1.append(chromo1)
+                    lastTop1 = chromo1.top + chromo1.height
                     chromo2 = dad.components[i]
                     comps2.append(chromo2)
+                    lastTop2 = chromo2.top + chromo2.height
                 else:
                     # TODO: on first "else" here, need to update the prev and next chromosomas
-                    chromo1 = dad.components[i]
+                    # also have to adjust top and recalculate score
+                    chromo1 = dad.components[i].copy()
+                    chromo1.top = lastTop1
+                    lastTop1 = chromo1.top + chromo1.height
+                    chromo1.score=-1  # reset score because the offset
                     comps1.append(chromo1)
-                    chromo2 = mum.components[i]
+                    chromo2 = mum.components[i].copy()
+                    chromo2.top = lastTop2
+                    lastTop2 = chromo2.top + chromo2.height
+                    chromo2.score=-1 # reset score because the offset
                     comps2.append(chromo2)
-            valid = baby1.testGenome(comps1) and baby2.testGenome(comps2)
+            valid = baby1.testGenome(comps1,self.webpage.scale) and baby2.testGenome(comps2,self.webpage.scale)
             retries += 1
 
         baby1.components = comps1

@@ -72,11 +72,15 @@ def main():
         for i in range(ga.get("EPOCHS")):
             logger.info(f"EPOCH {i}/{ga.get('EPOCHS')}")
             algo.epoch()
-            if i % infor_every == 0:
-                algo.render(wait_seconds=2)
-                logger.debug(f"GENERATION SCORE: {algo.total_fitness_score}")
+            #if i % infor_every == 0:
+            algo.render(wait_seconds=2)
+            logger.debug(f"GENERATION SCORE: {algo.total_fitness_score}")
 
-        logger.info(f"GENOMA FINAL BEST SCORE: {algo.best_fitness_score}")
+        logger.info(f"BEST GENOMA SCORE: {algo.best_fitness_score}")
+        bestgen = algo.get_best_genoma()
+        for chome in bestgen.components:
+            logger.info(f"-- {chome.component.name}: {chome.score}")
+
         algo.render(save=True)
         cv2.destroyAllWindows()
     elif task == "test":

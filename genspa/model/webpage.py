@@ -57,7 +57,7 @@ class Webpage:
             # fontScale
             fontScale = max(int(3*self.scale),1)
             org = (30, bottom_anchor - 30)
-            image = cv2.putText(image, str(chromo.component.name) , org, font, fontScale, color, thickness, cv2.LINE_AA)
+            image = cv2.putText(image, str(chromo.component.name) + " " + str(chromo.score), org, font, fontScale, color, thickness, cv2.LINE_AA)
 
         cv2.namedWindow('Image', cv2.WINDOW_GUI_NORMAL)  # WINDOW_AUTOSIZE WINDOW_NORMAL
         cv2.imshow("Image", image)

@@ -1,11 +1,12 @@
 {
   "ga": {
     "CROSSOVER_RATE": 0.7,
-    "MUTATION_RATE": 0.001,
-    "POP_SIZE": 100,
-    "CHROMO_LENGTH": 8,
-    "EPOCHS": 40,
-    "scale": 0.3
+    "MUTATION_RATE": 0.2,
+    "DOC_MUTATION_RATE": 0.001,
+    "POP_SIZE": 60,
+    "CHROMO_LENGTH": 10,
+    "EPOCHS": 33,
+    "scale": 0.26
   },
 
   "sites": ["https://afallonmon.com",

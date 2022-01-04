@@ -35,12 +35,15 @@ class Chromosome:
 
         cropped = site_image[top_anchor:bottom_anchor, 0:int(iw)]
 
-        if self.score > 0:
+        if self.score > 0.0:
             return self.score
 
         self.logger.debug(f"scoreComponent {self.component.name}")
-        self.score = self.scoreComponent(cropped,scale=scale)
-        self.logger.debug(f"END scoreComponent")
+        try:
+            self.score = self.scoreComponent(cropped,scale=scale)
+        except:
+            self.score = 0.0
+        self.logger.debug(f"END scoreComponent: {self.score}")
 
         return self.score
 

@@ -215,13 +215,13 @@ def detectAbout(cv_image, scale=1.0):
     # of the rectangle to be detected.
     # A smaller value like (10, 10) will detect
     # each word instead of a sentence.
-    rect_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (18, 18))
+    rect_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (38,38))  #(18, 18))
 
     # Applying dilation on the threshold image
     dilation = cv2.dilate(thresh1, rect_kernel, iterations=1)
 
     # Finding contours
-    contours, hierarchy = cv2.findContours(dilation, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
+    contours, hierarchy = cv2.findContours(dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
     # Creating a copy of image
     #im2 = cv_image.copy()
@@ -235,8 +235,12 @@ def detectAbout(cv_image, scale=1.0):
     for cnt in contours:
         x, y, w, h = cv2.boundingRect(cnt)
 
+        if h<(100*scale):
+            continue
+
         # Drawing a rectangle on copied image
         rect = cv2.rectangle(cv_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
 
         # Cropping the text block for giving input to OCR
         cropped = cv_image[y:y + h, x:x + w]

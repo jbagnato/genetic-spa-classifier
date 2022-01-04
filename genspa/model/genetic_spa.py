@@ -2,6 +2,7 @@ import cv2
 
 from alive_progress import alive_bar
 
+from genspa.constants import NUM_BEST_TO_ADD, TOP_BEST_TO_ADD
 from genspa.model.chromosome import Chromosome
 from genspa.model.component import Component
 from genspa.model.genome import Genome
@@ -33,10 +34,27 @@ class GeneticAlgorithmSPA:
     def mutate(self, genoma:Genome):
         for i, chromo in enumerate(genoma.components):
             if random.randint(0,100)/100 < self.mutation_rate:
+                self.logger.info("Mutation")
                 #flip the bit!
+
+                randomOffset = random.randint(0, int(self.webpage.height / 100))
+                randomIncrement = random.randint(0, int(self.webpage.height / self.components_length))
+
+                randomOperation = random.randint(0,100)
+                if (randomOperation>50):
+                    randomOffset = -1*randomOffset
+                    if chromo.top + randomOffset <=0:
+                        randomOffset = 0
+
+                randomOperation = random.randint(0,100)
+                if (randomOperation>50):
+                    randomIncrement = -1*randomIncrement
+                    if chromo.height + randomIncrement<=100:
+                        randomIncrement = 0
+
                 newchromo = Chromosome(random.choice(list(Component)),
-                                       top=chromo.top,
-                                       height_px=chromo.height,
+                                       top=chromo.top + randomOffset,
+                                       height_px=chromo.height + randomIncrement,
                                        position=chromo.position,
                                        prev_chromo=chromo.prev_chromo,
                                        next_chromo=chromo.next_chromo)
@@ -46,23 +64,34 @@ class GeneticAlgorithmSPA:
         if random.randint(0,100)/100 > self.crossover_rate or mum == dad:
             return mum, dad
 
+        self.logger.info("Crossover")
         cut = random.randint(0, self.components_length)
 
-        baby1 = Genome().reset()
-        baby2 = Genome().reset()
+        baby1 = Genome(self.components_length, self.webpage.height, self.webpage.scale,skip_generation=True)
+        baby2 = Genome(self.components_length, self.webpage.height, self.webpage.scale,skip_generation=True)
 
-        for i in range(self.components_length):
-            if i < cut:
-                chromo1 = mum.components[i]
-                baby1.components.append(chromo1)
-                chromo2 = dad.components[i]
-                baby2.components.append(chromo2)
-            else:
-                # TODO: on first "else" here, need to update the prev and next chromosomas
-                chromo1 = dad.components[i]
-                baby1.components.append(chromo1)
-                chromo2 = mum.components[i]
-                baby2.components.append(chromo2)
+        valid = False
+        retries = 0
+        while (not valid) and retries < 10:
+            comps1=list()
+            comps2=list()
+            for i in range(self.components_length):
+                if i < cut:
+                    chromo1 = mum.components[i]
+                    comps1.append(chromo1)
+                    chromo2 = dad.components[i]
+                    comps2.append(chromo2)
+                else:
+                    # TODO: on first "else" here, need to update the prev and next chromosomas
+                    chromo1 = dad.components[i]
+                    comps1.append(chromo1)
+                    chromo2 = mum.components[i]
+                    comps2.append(chromo2)
+            valid = baby1.testGenome(comps1) and baby2.testGenome(comps2)
+            retries += 1
+
+        baby1.components = comps1
+        baby2.components = comps2
 
         return baby1, baby2
 
@@ -94,29 +123,36 @@ class GeneticAlgorithmSPA:
 
     def create_start_popualtion(self):
         for new in range(self.population_size):
-            self.genomas.append(Genome(self.components_length, self.webpage.height))
+            self.genomas.append(Genome(self.components_length, self.webpage.height, self.webpage.scale))
 
     def epoch(self):
         self.update_fitness_score()
 
-        new_babies = 0
+        if self.best_fitness_score >= (10 * self.components_length):
+            # we found best posible solution
+            return
+
+        #new_babies = 0
         baby_genomes = list()
 
+        #for i in range(NUM_BEST_TO_ADD):
+        #    baby_genomes.append(self.genomas[self.fittest_genome])
+        # To return a new list, use the sorted() built-in function...
+        orderedlist = sorted(self.genomas, key=lambda x: x.fitness, reverse=True)
+        for i in range(TOP_BEST_TO_ADD):
+            for j in range(NUM_BEST_TO_ADD):
+                baby_genomes.append(orderedlist[i])
+
         #with alive_bar(int(self.population_size/2), title='Generation', bar='circles', spinner='twirls') as bar2:
-        self.logger("GENERATING NEW POPULATION")
-        while new_babies < self.population_size:
+        self.logger.info("GENERATING NEW POPULATION")
+        while len(baby_genomes) < self.population_size:
             mum = self.roulette_wheel_selection()
             dad = self.roulette_wheel_selection()
-            self.logger("Crossover")
             baby1, baby2 = self.crossover(mum, dad)
-            self.logger("Mutation")
             self.mutate(baby1)
             self.mutate(baby2)
             baby_genomes.append(baby1)
             baby_genomes.append(baby2)
-            new_babies += 2
-            #bar2.text(f"GENOMA BEST SCORE: {self.best_fitness_score}")
-            #bar2()
 
         self.genomas = baby_genomes
         self.generation += 1
@@ -125,3 +161,6 @@ class GeneticAlgorithmSPA:
         img = self.webpage.render(self.genomas[self.fittest_genome], wait_seconds)
         if save:
             cv2.imwrite('output.png', img)
+
+    def get_best_genoma(self):
+        return self.genomas[self.fittest_genome]

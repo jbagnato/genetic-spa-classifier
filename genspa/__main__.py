@@ -2,6 +2,7 @@ import os
 from time import sleep
 
 import cv2
+import imutils
 
 from alive_progress import alive_bar
 
@@ -9,6 +10,7 @@ from genspa.constants import IMG_DIR
 from genspa.model.chromosome import Chromosome
 from genspa.model.component import Component
 from genspa.model.genetic_spa import GeneticAlgorithmSPA
+from genspa.model.tools.pattern_recognition import detectAbout
 from genspa.model.webpage import Webpage
 from genspa.use_cases.SPAScrap import SPAScrap
 from genspa._argument_parser import parse_args
@@ -78,20 +80,31 @@ def main():
         algo.render(save=True)
         cv2.destroyAllWindows()
     elif task == "test":
-        height = 820
-        chromo = Chromosome(Component.BIG_IMAGE,0,height)
-        scale = 1
+        WAIT_SECONDS = 2
+
+        scale = 0.5
+        height = int(820*scale)
+        chromo = Chromosome(Component.BIG_TITLE,0,height)
         webimage = cv2.imread(IMG_DIR + args.image)
+        webimage = imutils.resize(webimage, width=int(webimage.shape[1] * scale))
+
         ih = webimage.shape[0]
         iw = webimage.shape[1]
         logger.info(f"IMAGE readed: {iw}px x {ih}px")
-        cropped = webimage[0:height, 0:int(iw)]
-        score = chromo.scoreComponent(cropped, scale)
-        logger.info(f"SCORE: {score}")
-        cv2.imshow('test', cropped)
-        WAIT_SECONDS = 6
-        cv2.waitKey(WAIT_SECONDS)
-        sleep(WAIT_SECONDS)
+        for i in range(int(30)):
+            offset = 10 + int(i*(height/3))
+            print("OFFset", offset)
+            cropped = webimage[offset:offset+height, 0:int(iw)]
+            logger.info(f"CROPPED: {iw}px x {height}px offset: {offset}")
+            score = chromo.scoreComponent(cropped, scale)
+            #score = detectAbout(cropped, scale)
+            logger.info(f"SCORE: {score}")
+            #if score > 0:
+            #    cv2.imshow('test', cropped)
+            #    cv2.waitKey(WAIT_SECONDS)
+            sleep(WAIT_SECONDS)
+            break
+
         cv2.destroyAllWindows()
 
     elif task == "interactive":

@@ -36,7 +36,7 @@ class GeneticAlgorithmSPA:
                                        height_px=chromo.height,
                                        position=chromo.position,
                                        prev_chromo=chromo.prev_chromo,
-                                       newchromo=chromo.next_chromo)
+                                       next_chromo=chromo.next_chromo)
                 genoma.components[i] = newchromo
 
     def crossover(self, mum:Genome, dad:Genome) -> (Genome, Genome):
@@ -55,6 +55,7 @@ class GeneticAlgorithmSPA:
                 chromo2 = dad.components[i]
                 baby2.components.append(chromo2)
             else:
+                # TODO: on first "else" here, need to update the prev and next chromosomas
                 chromo1 = dad.components[i]
                 baby1.components.append(chromo1)
                 chromo2 = mum.components[i]

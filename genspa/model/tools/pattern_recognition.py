@@ -5,6 +5,8 @@ import glob
 import cv2
 import pytesseract
 
+from genspa.constants import DEBUG_SHOW_PATTERN_IMAGES
+
 
 def detect_big_image(cv_image, scale=1.0):
     imgGry = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
@@ -16,7 +18,7 @@ def detect_big_image(cv_image, scale=1.0):
         approx = cv2.approxPolyDP(contour, 0.01 * cv2.arcLength(contour, True), True)
         x = approx.ravel()[0]
         y = approx.ravel()[1] - 5
-        if len(approx) == 4 :
+        if len(approx) == 4:
             x, y , w, h = cv2.boundingRect(approx)
             aspectRatio = float(w)/h
             #print(aspectRatio)
@@ -27,9 +29,10 @@ def detect_big_image(cv_image, scale=1.0):
                 cv2.putText(cv_image, "rectangle", (x, y), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 0))
 
             if w >int(1000*scale) and h>(700*scale):
-                cv2.drawContours(cv_image, [approx], 0, (0, 0, 0), 5)
-                cv2.imshow('shapes', cv_image)
-                cv2.waitKey(1)
+                if DEBUG_SHOW_PATTERN_IMAGES:
+                    cv2.drawContours(cv_image, [approx], 0, (0, 0, 0), 5)
+                    cv2.imshow('shapes', cv_image)
+                    cv2.waitKey(1)
                 return 10.0
 
     return 0.0
@@ -60,9 +63,10 @@ def detect_image_gallery(cv_image, scale=1.0):
                 qty+=1
 
                 if qty>4:
-                    cv2.drawContours(cv_image, [approx], 0, (0, 0, 0), 5)
-                    cv2.imshow('shapes', cv_image)
-                    cv2.waitKey(1)
+                    if DEBUG_SHOW_PATTERN_IMAGES:
+                        cv2.drawContours(cv_image, [approx], 0, (0, 0, 0), 5)
+                        cv2.imshow('shapes', cv_image)
+                        cv2.waitKey(1)
                     return 10.0
 
     return 0.0
@@ -89,9 +93,10 @@ def detect_banner(cv_image, scale=1.0):
                 cv2.putText(cv_image, "rectangle", (x, y), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 0))
 
             if w >(1700*scale) and h<(400*scale):
-                cv2.drawContours(cv_image, [approx], 0, (0, 0, 0), 5)
-                cv2.imshow('shapes', cv_image)
-                cv2.waitKey(1)
+                if DEBUG_SHOW_PATTERN_IMAGES:
+                    cv2.drawContours(cv_image, [approx], 0, (0, 0, 0), 5)
+                    cv2.imshow('shapes', cv_image)
+                    cv2.waitKey(1)
                 return 10.0
 
     return 0.0
@@ -119,9 +124,10 @@ def detect_shapes(cv_image, scale=1.0):
                 cv2.putText(cv_image, "rectangle", (x, y), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 0))
 
             if w >60 and h>60:
-                cv2.drawContours(cv_image, [approx], 0, (0, 0, 0), 5)
-                cv2.imshow('shapes', cv_image)
-                cv2.waitKey(1)
+                if DEBUG_SHOW_PATTERN_IMAGES:
+                    cv2.drawContours(cv_image, [approx], 0, (0, 0, 0), 5)
+                    cv2.imshow('shapes', cv_image)
+                    cv2.waitKey(1)
                 return 10.0
 
         elif len(approx) == 5 :
@@ -173,10 +179,11 @@ def detectBigTitle(cv_image, scale=1.0):
         # Apply OCR on the cropped image
         text = pytesseract.image_to_string(cropped)
 
-        if text and type(text) == str and len(text)>4 and w > (250*scale) and h>(113*scale) :
-            cv2.drawContours(im2, cnt, 0, (0, 0, 0), 5)
-            cv2.imshow('text', im2)
-            cv2.waitKey(1)
+        if text and type(text) == str and len(text)>4 and w > (250*scale) and h>(113*scale):
+            if DEBUG_SHOW_PATTERN_IMAGES:
+                cv2.drawContours(im2, cnt, 0, (0, 0, 0), 5)
+                cv2.imshow('text', im2)
+                cv2.waitKey(1)
             return 10.0
 
     return 0.0
@@ -229,8 +236,9 @@ def detectAbout(cv_image, scale=1.0):
             qty += 1
 
             if qty > 4 or len(accum_text) > 40:
-                cv2.imshow('text', cv_image)
-                cv2.waitKey(1)
+                if DEBUG_SHOW_PATTERN_IMAGES:
+                    cv2.imshow('text', cv_image)
+                    cv2.waitKey(1)
                 return 10.0
 
     return 0.0

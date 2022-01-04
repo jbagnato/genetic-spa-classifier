@@ -1,10 +1,13 @@
 import os
+from time import sleep
 
 import cv2
 
 from alive_progress import alive_bar
 
 from genspa.constants import IMG_DIR
+from genspa.model.chromosome import Chromosome
+from genspa.model.component import Component
 from genspa.model.genetic_spa import GeneticAlgorithmSPA
 from genspa.model.webpage import Webpage
 from genspa.use_cases.SPAScrap import SPAScrap
@@ -47,12 +50,12 @@ def main():
         #TODO: read config from json
         CROSSOVER_RATE = 0.7
         MUTATION_RATE = 0.001
-        POP_SIZE = 100
-        CHROMO_LENGTH = 9
-        EPOCHS = 100
+        POP_SIZE = 110
+        CHROMO_LENGTH = 10
+        EPOCHS = 105
         infor_every = EPOCHS / 25
 
-        scale = 0.3
+        scale = 0.35
 
         webimage = cv2.imread(IMG_DIR + args.image)
         if webimage is None:
@@ -73,6 +76,22 @@ def main():
 
         logger.info(f"GENOMA FINAL BEST SCORE: {algo.best_fitness_score}")
         algo.render(save=True)
+        cv2.destroyAllWindows()
+    elif task == "test":
+        height = 820
+        chromo = Chromosome(Component.BIG_IMAGE,0,height)
+        scale = 1
+        webimage = cv2.imread(IMG_DIR + args.image)
+        ih = webimage.shape[0]
+        iw = webimage.shape[1]
+        logger.info(f"IMAGE readed: {iw}px x {ih}px")
+        cropped = webimage[0:height, 0:int(iw)]
+        score = chromo.scoreComponent(cropped, scale)
+        logger.info(f"SCORE: {score}")
+        cv2.imshow('test', cropped)
+        WAIT_SECONDS = 6
+        cv2.waitKey(WAIT_SECONDS)
+        sleep(WAIT_SECONDS)
         cv2.destroyAllWindows()
 
     elif task == "interactive":

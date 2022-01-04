@@ -10,10 +10,15 @@ class Genome:
         self.components = list()
         self.fitness = 0.0
         prev_chromo = None
+        prevTop=0
         for i in range(max_components):
+            randomIncrement = random.randint(0, int(height_px/max_components))
+            top = prevTop #(int(height_px/max_components)*i)
+            height = int((height_px/max_components)/2) + randomIncrement
+            prevTop = top + height
             chromo = Chromosome(random.choice(list(Component)),
-                                top=(int(height_px/max_components)*i),
-                                height_px=int(height_px/max_components),
+                                top=top,
+                                height_px=height,
                                 position=i,
                                 prev_chromo=prev_chromo,
                                 next_chromo=None

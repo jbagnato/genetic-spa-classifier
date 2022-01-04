@@ -9,6 +9,8 @@ from genspa.model.webpage import Webpage
 
 import random
 
+from genspa.util.logger_utils import getLogger
+
 
 class GeneticAlgorithmSPA:
 
@@ -25,6 +27,7 @@ class GeneticAlgorithmSPA:
         self.webpage = webpage
         self.memory = list()  # to see how is the evolution over generations
         self.create_start_popualtion()
+        self.logger = getLogger()
 
 
     def mutate(self, genoma:Genome):
@@ -77,13 +80,17 @@ class GeneticAlgorithmSPA:
 
     def update_fitness_score(self):
         self.total_fitness_score = 0.0
-        for i, genoma in enumerate(self.genomas):
-            score = self.webpage.testRoute(genoma)
-            genoma.set_fitness(score)
-            if score > self.best_fitness_score:
-                self.best_fitness_score = score
-                self.fittest_genome = i
-            self.total_fitness_score += score
+
+        with alive_bar(len(self.genomas), title='CALCULATE', bar='circles', spinner='twirls') as bar3:
+            for i, genoma in enumerate(self.genomas):
+                score = self.webpage.testRoute(genoma, bar3)
+                genoma.set_fitness(score)
+                if score > self.best_fitness_score:
+                    self.best_fitness_score = score
+                    self.fittest_genome = i
+                bar3.text(f"BEST SCORE: {self.best_fitness_score}")
+                self.total_fitness_score += score
+                bar3()
 
     def create_start_popualtion(self):
         for new in range(self.population_size):
@@ -95,18 +102,21 @@ class GeneticAlgorithmSPA:
         new_babies = 0
         baby_genomes = list()
 
-        with alive_bar(int(self.population_size/2), title='Generation', bar='circles', spinner='twirls') as bar2:
-            while new_babies < self.population_size:
-                mum = self.roulette_wheel_selection()
-                dad = self.roulette_wheel_selection()
-                baby1, baby2 = self.crossover(mum, dad)
-                self.mutate(baby1)
-                self.mutate(baby2)
-                baby_genomes.append(baby1)
-                baby_genomes.append(baby2)
-                new_babies += 2
-                bar2.text(f"GENOMA BEST SCORE: {self.best_fitness_score}")
-                bar2()
+        #with alive_bar(int(self.population_size/2), title='Generation', bar='circles', spinner='twirls') as bar2:
+        self.logger("GENERATING NEW POPULATION")
+        while new_babies < self.population_size:
+            mum = self.roulette_wheel_selection()
+            dad = self.roulette_wheel_selection()
+            self.logger("Crossover")
+            baby1, baby2 = self.crossover(mum, dad)
+            self.logger("Mutation")
+            self.mutate(baby1)
+            self.mutate(baby2)
+            baby_genomes.append(baby1)
+            baby_genomes.append(baby2)
+            new_babies += 2
+            #bar2.text(f"GENOMA BEST SCORE: {self.best_fitness_score}")
+            #bar2()
 
         self.genomas = baby_genomes
         self.generation += 1

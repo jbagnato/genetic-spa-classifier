@@ -2,6 +2,7 @@ import random
 
 import cv2
 import imutils
+from alive_progress import alive_bar
 
 from genspa.model.genome import Genome
 
@@ -19,7 +20,7 @@ class Webpage:
         self.height = height_px
 
     """Returns a fitness score proportional to the distance reached from the exit."""
-    def testRoute(self, path:Genome) -> float:
+    def testRoute(self, path:Genome, bar=None) -> float:
         score = 0.0
         travel_px = 0
         for chromo in path.components:
@@ -30,6 +31,8 @@ class Webpage:
 
             score += chromo.fitness(self.site_image.copy(),scale=self.scale)
             travel_px += chromo.height
+            if bar:
+                bar.text(f"{chromo.component.name} LAST SCORE: {score}")
 
         return score
 

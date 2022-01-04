@@ -25,7 +25,7 @@ subparsers = parser.add_subparsers(dest="task")
 subparsers.required = True
 # Preprocessing subparser
 preprocess_parser = subparsers.add_parser("scrap", help="visit list of websites and take snapshot.")
-preprocess_parser.add_argument("jsonFile", nargs='?', default="basic", help="Optional. Specify a json settings file.")
+preprocess_parser.add_argument("settingsFile", nargs='?', default="basic", help="Optional. Specify a json settings file.")
 
 # Preprocessing subparser
 preprocess_parser = subparsers.add_parser("train", help="run GA")

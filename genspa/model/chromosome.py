@@ -1,6 +1,7 @@
 from genspa.model.component import Component
 from genspa.model.tools.pattern_recognition import detect_big_image, detect_image_gallery, detect_banner, \
     detectBigTitle, detectAbout
+from genspa.util.logger_utils import getLogger
 
 
 class Chromosome:
@@ -14,6 +15,7 @@ class Chromosome:
         self.prev_chromo = prev_chromo
         self.next_chromo = next_chromo
         self.text = None
+        self.logger = getLogger()
 
     """depending on the component, this function will calculate the value of fitness
     on the part of the image it is situated"""
@@ -36,7 +38,9 @@ class Chromosome:
         if self.score > 0:
             return self.score
 
+        self.logger.debug(f"scoreComponent {self.component.name}")
         self.score = self.scoreComponent(cropped,scale=scale)
+        self.logger.debug(f"END scoreComponent")
 
         return self.score
 
@@ -50,10 +54,19 @@ class Chromosome:
         elif self.component == Component.IMAGE_GALLERY:
             return detect_image_gallery(image,scale=scale)
         elif self.component == Component.BANNER:
-            return detect_banner(image,scale=scale)
+            score = detect_banner(image,scale=scale)
+            if score > 0 and self.position == 0 or (not self.next_chromo):
+                score += 1.0
+            return score
         elif self.component == Component.BIG_TITLE:
             return detectBigTitle(image,scale=scale)
         elif self.component == Component.ABOUT:
             return detectAbout(image,scale=scale)
+        elif self.component == Component.HEADER:
+            if self.position == 0:
+                return 7.0
+        elif self.component == Component.FOOTER:
+            if not self.next_chromo:
+                return 7.0
 
         return 0.0

@@ -80,15 +80,13 @@ def detect_image_gallery(cv_image, scale=1.0):
                         cv2.waitKey(1)
                     return 10.0
 
-    cv2.imshow('test', cv_image)
-    cv2.waitKey(1)
-    return 0.0
 
     return 0.0
 
 
 def detect_banner(cv_image, scale=1.0):
     imgGry = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
+    imgGry = cv2.GaussianBlur(imgGry, (7, 7), 0)
 
     ret , thrash = cv2.threshold(imgGry, 240 , 255, cv2.CHAIN_APPROX_NONE)
     contours , hierarchy = cv2.findContours(thrash, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -194,8 +192,8 @@ def detectBigTitle(cv_image, scale=1.0):
         # Apply OCR on the cropped image
         text = pytesseract.image_to_string(cropped)
         number_of_intros = len(text.strip().splitlines())
-        if text and type(text) == str and len(text)>4 and w > (250*scale) and h>((113*scale)*number_of_intros):
-            print(w,h,text)
+        if text and type(text) == str and len(text) > 4 and w > (250*scale) and h > ((113*scale)*number_of_intros):
+            #print(w,h,text)
             if DEBUG_SHOW_PATTERN_IMAGES:
                 cv2.drawContours(cv_image, cnt, 0, (0, 0, 0), 5)
                 cv2.imshow('text', cv_image)
@@ -223,8 +221,7 @@ def detectAbout(cv_image, scale=1.0):
     dilation = cv2.dilate(thresh1, rect_kernel, iterations=1)
 
     # Finding contours
-    contours, hierarchy = cv2.findContours(dilation, cv2.RETR_EXTERNAL,
-                                           cv2.CHAIN_APPROX_NONE)
+    contours, hierarchy = cv2.findContours(dilation, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
 
     # Creating a copy of image
     #im2 = cv_image.copy()
@@ -260,3 +257,4 @@ def detectAbout(cv_image, scale=1.0):
                 return 10.0
 
     return 0.0
+

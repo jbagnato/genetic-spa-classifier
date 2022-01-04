@@ -1,6 +1,15 @@
 {
-  "sites": ["https://afallonmon.com"],
-  "done":["https://gotcha.dk",
+  "ga": {
+    "CROSSOVER_RATE": 0.7,
+    "MUTATION_RATE": 0.001,
+    "POP_SIZE": 100,
+    "CHROMO_LENGTH": 8,
+    "EPOCHS": 40,
+    "scale": 0.3
+  },
+
+  "sites": ["https://afallonmon.com",
+    "https://gotcha.dk",
     "https://www.banyaksurfadventure.com",
     "https://www.raleigh.co.uk/gb/en/centros-tour/",
     "https://hypnax.co",

@@ -41,40 +41,40 @@ def main():
             urls = args.jsonFile.split(",")
         else:
             try:
-                settings = openConfig(args.jsonFile)
+                settings = openConfig(args.settingsFile)
                 urls = settings.get('sites')
             except ValueError:
                 logger.error("Can not open Json file")
 
         scrap.captureWebsiteSceen(urls, delay=0.5)
-    elif task == "train":
-        logger.info(f"STARTING SPA GENETIC ALGORITHM")
-        #TODO: read config from json
-        CROSSOVER_RATE = 0.7
-        MUTATION_RATE = 0.001
-        POP_SIZE = 110
-        CHROMO_LENGTH = 10
-        EPOCHS = 105
-        infor_every = EPOCHS / 25
 
-        scale = 0.35
+    elif task == "train":
+
+        logger.info(f"STARTING SPA GENETIC ALGORITHM")
+        try:
+            settings = openConfig(args.settingsFile)
+            ga = settings.get('ga')
+        except ValueError:
+            logger.error("Can not open Json file")
+
+        infor_every = ga.get("EPOCHS") / 25
+
 
         webimage = cv2.imread(IMG_DIR + args.image)
         if webimage is None:
             logger.error(f"Can not find image file {args.image}")
             return
-        web = Webpage(webimage, scale=scale)
+        web = Webpage(webimage, scale=ga.get("scale"))
 
         logger.info(f"IMAGE readed: {web.width}px x {web.height}px")
 
-        algo = GeneticAlgorithmSPA(web, POP_SIZE, CROSSOVER_RATE, MUTATION_RATE, CHROMO_LENGTH)
-        with alive_bar(EPOCHS, title='Processing') as bar:
-            for i in range(EPOCHS):
-                algo.epoch()
-                if i % infor_every == 0:
-                    algo.render(wait_seconds=2)
-                    bar.text(f"GENERATION SCORE: {algo.total_fitness_score}")
-                bar()
+        algo = GeneticAlgorithmSPA(web, ga.get("POP_SIZE"), ga.get("CROSSOVER_RATE"), ga.get("MUTATION_RATE"), ga.get("CHROMO_LENGTH"))
+        for i in range(ga.get("EPOCHS")):
+            logger.info(f"EPOCH {i}/{ga.get('EPOCHS')}")
+            algo.epoch()
+            if i % infor_every == 0:
+                algo.render(wait_seconds=2)
+                logger.debug(f"GENERATION SCORE: {algo.total_fitness_score}")
 
         logger.info(f"GENOMA FINAL BEST SCORE: {algo.best_fitness_score}")
         algo.render(save=True)

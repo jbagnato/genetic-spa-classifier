@@ -147,12 +147,12 @@ class GeneticAlgorithmSPA:
         for new in range(self.population_size):
             self.genomas.append(Genome(self.components_length, self.webpage.height, self.webpage.scale))
 
-    def epoch(self):
+    def epoch(self, last=False) -> bool:
         self.update_fitness_score()
 
-        if self.best_fitness_score >= (10 * self.components_length):
+        if self.best_fitness_score >= (10 * self.components_length) or last:
             # we found best posible solution
-            return
+            return True
 
         #new_babies = 0
         baby_genomes = list()
@@ -178,6 +178,8 @@ class GeneticAlgorithmSPA:
 
         self.genomas = baby_genomes
         self.generation += 1
+
+        return False
 
     def render(self, wait_seconds=1, save=False):
         img = self.webpage.render(self.genomas[self.fittest_genome], wait_seconds)

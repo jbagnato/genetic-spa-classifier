@@ -69,12 +69,15 @@ def main():
         logger.info(f"IMAGE readed: {web.width}px x {web.height}px")
 
         algo = GeneticAlgorithmSPA(web, ga.get("POP_SIZE"), ga.get("CROSSOVER_RATE"), ga.get("MUTATION_RATE"), ga.get("CHROMO_LENGTH"))
-        for i in range(ga.get("EPOCHS")):
+        totalEpochs = ga.get("EPOCHS")
+        for i in range(totalEpochs):
             logger.info(f"EPOCH {i}/{ga.get('EPOCHS')}")
-            algo.epoch()
+            done = algo.epoch( i == (totalEpochs-1) )
             #if i % infor_every == 0:
             algo.render(wait_seconds=2)
             logger.debug(f"GENERATION SCORE: {algo.total_fitness_score}")
+            if done:
+                break
 
         logger.info(f"BEST GENOMA SCORE: {algo.best_fitness_score}")
         bestgen = algo.get_best_genoma()
@@ -86,9 +89,10 @@ def main():
     elif task == "test":
         WAIT_SECONDS = 2
 
-        scale = 0.5
+        scale = 1
+        #height = int(820*scale)
         height = int(820*scale)
-        chromo = Chromosome(Component.BIG_TITLE,0,height)
+        chromo = Chromosome(Component.ABOUT,0,height)
         webimage = cv2.imread(IMG_DIR + args.image)
         webimage = imutils.resize(webimage, width=int(webimage.shape[1] * scale))
 
@@ -96,7 +100,7 @@ def main():
         iw = webimage.shape[1]
         logger.info(f"IMAGE readed: {iw}px x {ih}px")
         for i in range(int(30)):
-            offset = 10 + int(i*(height/3))
+            offset = 3300 + int(i*(height/3))
             print("OFFset", offset)
             cropped = webimage[offset:offset+height, 0:int(iw)]
             logger.info(f"CROPPED: {iw}px x {height}px offset: {offset}")
@@ -104,8 +108,8 @@ def main():
             #score = detectAbout(cropped, scale)
             logger.info(f"SCORE: {score}")
             #if score > 0:
-            #    cv2.imshow('test', cropped)
-            #    cv2.waitKey(WAIT_SECONDS)
+            cv2.imshow('test', cropped)
+            cv2.waitKey(WAIT_SECONDS)
             sleep(WAIT_SECONDS)
             break
 

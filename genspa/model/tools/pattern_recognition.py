@@ -183,17 +183,34 @@ def detectBigTitle(cv_image, scale=1.0):
     for cnt in contours:
         x, y, w, h = cv2.boundingRect(cnt)
 
+        if h<(113*scale):
+            continue
+
         # Drawing a rectangle on copied image
         rect = cv2.rectangle(cv_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
         # Cropping the text block for giving input to OCR
         cropped = cv_image[y:y + h, x:x + w]
 
-        # Apply OCR on the cropped image
-        text = pytesseract.image_to_string(cropped)
+        try:
+            # Apply OCR on the cropped image
+            text = pytesseract.image_to_string(cropped, timeout=1.0)
+        except:
+            print("ERROR, TESSERACT TIMEOUT!")
+            return 0.0
+
         number_of_intros = len(text.strip().splitlines())
-        if text and type(text) == str and len(text) > 4 and w > (250*scale) and h > ((113*scale)*number_of_intros):
+        # Get bounding box estimates
+        bounding = pytesseract.image_to_boxes(cropped,output_type='dict')
+
+        if text and type(text) == str and len(text) > 4 and w > (250*scale) and h > ((113*scale)*number_of_intros)\
+                and bounding['right'][0] < w and bounding['top'][0]< h :
             #print(w,h,text)
+            #print(boundes['left'][0],boundes['bottom'][0],boundes['right'][0],boundes['top'][0])
+
+            # Get verbose data including boxes, confidences, line and page numbers
+            #print(pytesseract.image_to_data(cropped))
+
             if DEBUG_SHOW_PATTERN_IMAGES:
                 cv2.drawContours(cv_image, cnt, 0, (0, 0, 0), 5)
                 cv2.imshow('text', cv_image)
@@ -246,10 +263,15 @@ def detectAbout(cv_image, scale=1.0):
         cropped = cv_image[y:y + h, x:x + w]
 
         # Apply OCR on the cropped image
-        text = pytesseract.image_to_string(cropped)
+        try:
+            text = pytesseract.image_to_string(cropped, timeout=1.0)
+        except:
+            print("ERROR, TESSERACT TIMEOUT!(2)")
+            return 0.0
         number_of_intros = len(text.strip().splitlines())
+        #print(len(text),h,w,number_of_intros,text)
 
-        if text and type(text) == str and len(text)>4 and h<(100*scale) and number_of_intros>1:
+        if text and type(text) == str and len(text)>4 and h>(100*scale) and number_of_intros>1:
             cv2.drawContours(cv_image, cnt, 0, (0, 0, 0), 5)
             accum_text += " " + text
             qty += 1

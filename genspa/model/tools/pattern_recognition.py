@@ -83,6 +83,41 @@ def detect_image_gallery(cv_image, scale=1.0):
 
     return 0.0
 
+
+def detect_big_button(cv_image, scale=1.0):
+    imgGry = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
+    imgGry = cv2.GaussianBlur(imgGry, (17, 17), 0)
+    ret , thrash = cv2.threshold(imgGry, 240 , 255, cv2.CHAIN_APPROX_NONE)
+    contours , hierarchy = cv2.findContours(thrash, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    qty = 0
+    for contour in contours:
+        approx = cv2.approxPolyDP(contour, 0.13 * cv2.arcLength(contour, True), True)
+        x = approx.ravel()[0]
+        y = approx.ravel()[1] - 5
+        #cv2.drawContours(cv_image, [approx], 0, (0, 0, 0), 5)
+        if len(approx) == 4:
+            x, y , w, h = cv2.boundingRect(approx)
+            aspectRatio = float(w)/h
+            #print(aspectRatio)
+            if aspectRatio >= 0.95 and aspectRatio < 1.05:
+                cv2.putText(cv_image, "square", (x, y), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 0))
+                continue
+            else:
+                cv2.putText(cv_image, "rectangle", (x, y), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 0))
+
+            if (w >(100*scale) and h>(50*scale)) and (w < (500*scale) and h<(210*scale)):
+                qty += 1
+
+    if qty == 1:
+        if DEBUG_SHOW_PATTERN_IMAGES:
+            #cv2.drawContours(cv_image, [approx], 0, (0, 0, 0), 5)
+            cv2.imshow('shapes', cv_image)
+            cv2.waitKey(1)
+        return 10.0
+
+    return 0.0
+
+
 def detect_product_features(cv_image, scale=1.0):
     original = cv_image.copy()
     imgGry = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)

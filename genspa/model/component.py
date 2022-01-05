@@ -19,7 +19,7 @@ class Component(IntEnum):
     PRODUCT_FEATURES = 203  # Main feature, can be 2-4 images with text
 #    PRODUCT_SCREENSHOTS = 204  # images inside screen, tablet or mobile
     TEXT_PARAGRAPH = 205
-#    BIG_BUTTONS = 206  # may be to redirect to categories or other sections
+    BIG_BUTTONS = 206  # may be to redirect to categories or other sections
 #    QUOTE = 207  #
 
 #    VIDEO = 301

@@ -1,6 +1,6 @@
 from genspa.model.component import Component
 from genspa.model.tools.pattern_recognition import detect_big_image, detect_image_gallery, detect_banner, \
-    detectBigTitle, detectAbout, detectBlank, detect_product_features
+    detectBigTitle, detectAbout, detectBlank, detect_product_features, detect_big_button
 from genspa.util.logger_utils import getLogger
 
 
@@ -63,6 +63,8 @@ class Chromosome:
             return score
         elif self.component == Component.BIG_TITLE:
             return detectBigTitle(image, scale=scale)
+        elif self.component == Component.BIG_BUTTONS:
+            return detect_big_button(image, scale=scale)
         elif self.component == Component.ABOUT:
             return detectAbout(image, scale=scale)
         elif self.component == Component.TEXT_PARAGRAPH:

@@ -4,7 +4,7 @@
     "MUTATION_RATE": 0.02,
     "DOC_MUTATION_RATE": 0.001,
     "POP_SIZE": 70,
-    "CHROMO_LENGTH": 11,
+    "CHROMO_LENGTH": 12,
     "EPOCHS": 25,
     "scale": 0.25
   },

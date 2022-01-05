@@ -35,7 +35,7 @@ class GeneticAlgorithmSPA:
     def mutate(self, genoma:Genome):
         for i, chromo in enumerate(genoma.components):
             if random.randint(0,100)/100 < self.mutation_rate:
-                self.logger.info("Mutation")
+                #self.logger.info("Mutation")
                 #flip the bit!
 
                 #randomOffset = random.randint(0, int(self.webpage.height / 100))
@@ -76,7 +76,7 @@ class GeneticAlgorithmSPA:
         if random.randint(0,100)/100 > self.crossover_rate or mum == dad:
             return mum, dad
 
-        self.logger.info("Crossover")
+        #self.logger.info("Crossover")
         cut = random.randint(1, self.components_length-1)
 
         baby1 = Genome(self.components_length, self.webpage.height, self.webpage.scale,skip_generation=True)

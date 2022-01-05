@@ -156,6 +156,8 @@ def detect_shapes(cv_image, scale=1.0):
 def detectBigTitle(cv_image, scale=1.0):
     # Convert the image to gray scale
     gray = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
+    ih = gray.shape[0]
+    iw = gray.shape[1]
 
     # Performing OTSU threshold
     ret, thresh1 = cv2.threshold(gray, 0, 255, cv2.THRESH_OTSU | cv2.THRESH_BINARY_INV)
@@ -184,6 +186,8 @@ def detectBigTitle(cv_image, scale=1.0):
         x, y, w, h = cv2.boundingRect(cnt)
 
         if h<(113*scale):
+            continue
+        if y <(130*scale) or y > (ih - (150*scale)):
             continue
 
         # Drawing a rectangle on copied image
@@ -284,3 +288,37 @@ def detectAbout(cv_image, scale=1.0):
 
     return 0.0
 
+def detectBlank(cv_image, scale=1.0):
+    try:
+        text = pytesseract.image_to_string(cv_image, timeout=1.0)
+    except:
+        print("ERROR, TESSERACT TIMEOUT!(3)")
+        return 0.0
+
+    if text and type(text) == str and len(text)>4:
+        # if there is text, is not blank
+        return 0.0
+
+    imgGry = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
+    imgGry = cv2.GaussianBlur(imgGry, (17, 17), 0)
+
+    ret , thrash = cv2.threshold(imgGry, 240 , 255, cv2.CHAIN_APPROX_NONE)
+    contours, hierarchy = cv2.findContours(thrash, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+
+    qty = 0
+    for contour in contours:
+        approx = cv2.approxPolyDP(contour, 0.2 * cv2.arcLength(contour, True), True)
+        x = approx.ravel()[0]
+        y = approx.ravel()[1] - 5
+
+        cv2.drawContours(cv_image, [approx], 0, (0, 0, 0), 5)
+
+        qty += 1
+
+        if len(approx) > 4:
+            return 0.0
+
+        if qty > 6:
+            return 0.0
+
+    return 6.0

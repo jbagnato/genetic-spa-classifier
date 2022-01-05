@@ -1,6 +1,6 @@
 from genspa.model.component import Component
 from genspa.model.tools.pattern_recognition import detect_big_image, detect_image_gallery, detect_banner, \
-    detectBigTitle, detectAbout
+    detectBigTitle, detectAbout, detectBlank
 from genspa.util.logger_utils import getLogger
 
 
@@ -53,18 +53,20 @@ class Chromosome:
 
     def scoreComponent(self, image,scale=1) -> float:
         if self.component == Component.BIG_IMAGE:
-            return detect_big_image(image,scale=scale)
+            return detect_big_image(image, scale=scale)
         elif self.component == Component.IMAGE_GALLERY:
-            return detect_image_gallery(image,scale=scale)
+            return detect_image_gallery(image, scale=scale)
         elif self.component == Component.BANNER:
-            score = detect_banner(image,scale=scale)
+            score = detect_banner(image, scale=scale)
             if score > 0 and self.position == 0 or (not self.next_chromo):
                 score += 1.0
             return score
         elif self.component == Component.BIG_TITLE:
-            return detectBigTitle(image,scale=scale)
+            return detectBigTitle(image, scale=scale)
         elif self.component == Component.ABOUT:
-            return detectAbout(image,scale=scale)
+            return detectAbout(image, scale=scale)
+        elif self.component == Component.BLANK:
+            return detectBlank(image, scale=scale)
         elif self.component == Component.HEADER:
             if self.position == 0:
                 return 10.0

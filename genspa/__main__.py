@@ -76,6 +76,7 @@ def main():
             #if i % infor_every == 0:
             #algo.render(wait_seconds=2)
             logger.debug(f"GENERATION SCORE: {algo.total_fitness_score}")
+            logger.debug(f"FITTEST GENOMA: {algo.best_fitness_score}")
             if done:
                 break
 

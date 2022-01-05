@@ -55,6 +55,10 @@ class Genome:
         if len(headers)>1:
             return False
 
+        badHeaders = [x for x in chromos if x.component == Component.HEADER and x.height>700]
+        if len(badHeaders)>1:
+            return False
+
         footer = [x for x in chromos if x.component == Component.FOOTER]
         if len(footer)>1:
             return False
@@ -65,6 +69,10 @@ class Genome:
 
         badBanner = [x for x in chromos if x.component == Component.BANNER and x.height > (450*scale)]
         if len(badBanner)>0:
+            return False
+
+        badBigPic = [x for x in chromos if x.component == Component.BIG_IMAGE and x.height < (700*scale)]
+        if len(badBigPic)>0:
             return False
 
         about = [x for x in chromos if x.component == Component.ABOUT]
@@ -79,3 +87,5 @@ class Genome:
             newC = copy.deepcopy(c)
             ncopied.append(newC)
         self.components = ncopied
+
+        return self

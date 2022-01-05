@@ -72,9 +72,9 @@ def main():
         totalEpochs = ga.get("EPOCHS")
         for i in range(totalEpochs):
             logger.info(f"EPOCH {i}/{ga.get('EPOCHS')}")
-            done = algo.epoch( i == (totalEpochs-1) )
+            done = algo.epoch(render=True, last=i == (totalEpochs-1) )
             #if i % infor_every == 0:
-            algo.render(wait_seconds=2)
+            #algo.render(wait_seconds=2)
             logger.debug(f"GENERATION SCORE: {algo.total_fitness_score}")
             if done:
                 break

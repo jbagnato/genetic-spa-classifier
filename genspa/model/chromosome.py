@@ -38,12 +38,12 @@ class Chromosome:
         if self.score > 0.0:
             return self.score
 
-        self.logger.debug(f"scoreComponent {self.component.name}")
+        #self.logger.debug(f"scoreComponent {self.component.name}")
         try:
             self.score = self.scoreComponent(cropped,scale=scale)
         except:
             self.score = 0.0
-        self.logger.debug(f"END scoreComponent: {self.score}")
+        #self.logger.debug(f"END scoreComponent: {self.score}")
 
         return self.score
 

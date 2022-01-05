@@ -86,29 +86,39 @@ class GeneticAlgorithmSPA:
         while (not valid) and retries < 10:
             comps1=list()
             comps2=list()
+            lastTop1 = 0
+            lastTop2 = 0
+            prevChromo1=None
+            prevChromo2=None
             for i in range(self.components_length):
-                lastTop1 = 0
-                lastTop2 = 0
                 if i < cut:
                     chromo1 = mum.components[i]
                     comps1.append(chromo1)
                     lastTop1 = chromo1.top + chromo1.height
+                    prevChromo1 = chromo1
                     chromo2 = dad.components[i]
                     comps2.append(chromo2)
+                    prevChromo2 = chromo2
                     lastTop2 = chromo2.top + chromo2.height
                 else:
                     # TODO: on first "else" here, need to update the prev and next chromosomas
                     # also have to adjust top and recalculate score
-                    chromo1 = dad.components[i].copy()
+                    chromo1 = dad.components[i]
                     chromo1.top = lastTop1
                     lastTop1 = chromo1.top + chromo1.height
                     chromo1.score=-1  # reset score because the offset
+                    prevChromo1.next_chromo=chromo1
+                    chromo1.prev_chromo = prevChromo1
                     comps1.append(chromo1)
-                    chromo2 = mum.components[i].copy()
+                    prevChromo1 = chromo1
+                    chromo2 = mum.components[i]
                     chromo2.top = lastTop2
                     lastTop2 = chromo2.top + chromo2.height
                     chromo2.score=-1 # reset score because the offset
+                    prevChromo2.next_chromo=chromo2
+                    chromo2.prev_chromo = prevChromo2
                     comps2.append(chromo2)
+                    prevChromo2 = chromo2
             valid = baby1.testGenome(comps1,self.webpage.scale) and baby2.testGenome(comps2,self.webpage.scale)
             retries += 1
 
@@ -147,8 +157,10 @@ class GeneticAlgorithmSPA:
         for new in range(self.population_size):
             self.genomas.append(Genome(self.components_length, self.webpage.height, self.webpage.scale))
 
-    def epoch(self, last=False) -> bool:
+    def epoch(self, render=False, last=False) -> bool:
         self.update_fitness_score()
+        if render:
+            self.render(2)
 
         if self.best_fitness_score >= (10 * self.components_length) or last:
             # we found best posible solution

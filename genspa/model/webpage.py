@@ -27,12 +27,10 @@ class Webpage:
             if travel_px > self.height:
                 break
 
-            #TODO: validate not to have more than 1 header, and other rules that wont add score
-
             score += chromo.fitness(self.site_image.copy(),scale=self.scale)
             travel_px += chromo.height
             if bar:
-                bar.text(f"{chromo.component.name} LAST SCORE: {score}")
+                bar.text(f"{chromo.component.name} : {score}")
 
         return score
 

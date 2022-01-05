@@ -2,7 +2,7 @@ import logging
 
 
 def getLogger(log_level="DEBUG", log_name='genspa', log_file=None) -> logging.Logger:
-    logger = logging.Logger(log_name)
+    logger = logging.getLogger(log_name)
     
     if not logger.handlers:
         logger.setLevel(log_level)

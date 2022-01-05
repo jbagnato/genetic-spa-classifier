@@ -35,10 +35,10 @@ def main():
 
     if task == "scrap":
         scrap = SPAScrap()
-        if args.jsonFile == 'basic':
+        if args.settingsFile == 'basic':
             urls = scrap.scrap_urls()
-        elif args.jsonFile.startswith("http"):
-            urls = args.jsonFile.split(",")
+        elif args.settingsFile.startswith("http"):
+            urls = args.settingsFile.split(",")
         else:
             try:
                 settings = openConfig(args.settingsFile)

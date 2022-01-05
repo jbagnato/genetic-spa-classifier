@@ -23,7 +23,7 @@ class Genome:
         prev_chromo = None
         prevTop=0
         components = list()
-        base_size = min(int(height_px / max_components), int(350*self.scale))
+        base_size = max(int(height_px / max_components), int(350*self.scale))
         for i in range(max_components):
             randomIncrement = random.randint(0, base_size)
             top = prevTop  # (int(height_px/max_components)*i)

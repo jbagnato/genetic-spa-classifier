@@ -80,6 +80,10 @@ class Genome:
         if len(about)>2:
             return False
 
+        blank = [x for x in chromos if x.component == Component.BLANK]
+        if len(blank)>4:
+            return False
+
         return True
 
     def copy(self):

@@ -83,6 +83,35 @@ def detect_image_gallery(cv_image, scale=1.0):
 
     return 0.0
 
+def detect_product_features(cv_image, scale=1.0):
+    original = cv_image.copy()
+    imgGry = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
+    imgGry = cv2.GaussianBlur(imgGry, (17, 17), 0)
+    ret , thrash = cv2.threshold(imgGry, 240 , 255, cv2.CHAIN_APPROX_NONE)
+    contours , hierarchy = cv2.findContours(thrash, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    qty = 0
+    for contour in contours:
+        approx = cv2.approxPolyDP(contour, 0.09 * cv2.arcLength(contour, True), True)
+        x = approx.ravel()[0]
+        y = approx.ravel()[1] - 5
+        cv2.drawContours(cv_image, [approx], 0, (0, 0, 0), 5)
+        if len(approx) == 4:
+            x, y , w, h = cv2.boundingRect(approx)
+            aspectRatio = float(w)/h
+            if (w >(100*scale) and h>(100*scale)) and (w < (700*scale) and h<(700*scale)):
+                qty += 1
+                if qty >= 2:
+                    if DEBUG_SHOW_PATTERN_IMAGES:
+                        cv2.drawContours(cv_image, [approx], 0, (0, 0, 0), 5)
+                        cv2.imshow('shapes', cv_image)
+                        cv2.waitKey(1)
+                # AND has to have some text
+                hasText = detectAbout(original, scale=scale, min_len=22, min_boxes=2, min_intros=1, min_box_height=60)
+                if hasText>0.0:
+                    return 10.0
+
+    return 0.0
+
 
 def detect_banner(cv_image, scale=1.0):
     imgGry = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
@@ -224,7 +253,7 @@ def detectBigTitle(cv_image, scale=1.0):
     return 0.0
 
 
-def detectAbout(cv_image, scale=1.0):
+def detectAbout(cv_image, scale=1.0, min_len=30, min_boxes=4, min_intros=1, min_box_height=100):
     # Convert the image to gray scale
     gray = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
 
@@ -256,7 +285,7 @@ def detectAbout(cv_image, scale=1.0):
     for cnt in contours:
         x, y, w, h = cv2.boundingRect(cnt)
 
-        if h<(100*scale):
+        if h<(min_box_height*scale):
             continue
 
         # Drawing a rectangle on copied image
@@ -275,12 +304,12 @@ def detectAbout(cv_image, scale=1.0):
         number_of_intros = len(text.strip().splitlines())
         #print(len(text),h,w,number_of_intros,text)
 
-        if text and type(text) == str and len(text)>4 and h>(100*scale) and number_of_intros>1:
+        if text and type(text) == str and len(text)>4 and h>(100*scale) and number_of_intros > min_intros:
             cv2.drawContours(cv_image, cnt, 0, (0, 0, 0), 5)
             accum_text += " " + text
             qty += 1
 
-            if qty >= 4 or len(accum_text) > 30:
+            if qty >= min_boxes or len(accum_text) > min_len:
                 if DEBUG_SHOW_PATTERN_IMAGES:
                     cv2.imshow('text', cv_image)
                     cv2.waitKey(1)

@@ -23,10 +23,11 @@ class Genome:
         prev_chromo = None
         prevTop=0
         components = list()
+        base_size = min(int(height_px / max_components), int(350*self.scale))
         for i in range(max_components):
-            randomIncrement = random.randint(0, int(height_px / max_components))
+            randomIncrement = random.randint(0, base_size)
             top = prevTop  # (int(height_px/max_components)*i)
-            height = int((height_px / max_components) / 2) + randomIncrement
+            height = int(base_size / 2) + randomIncrement
             prevTop = top + height
             chromo = Chromosome(random.choice(list(Component)),
                                 top=top,
@@ -71,8 +72,8 @@ class Genome:
         if len(badBanner)>0:
             return False
 
-        badBigPic = [x for x in chromos if x.component == Component.BIG_IMAGE and x.height < (700*scale)]
-        if len(badBigPic)>0:
+        bad_big_pic = [x for x in chromos if (x.component == Component.BIG_IMAGE) and (x.height < (400*scale))]
+        if len(bad_big_pic) > 0:
             return False
 
         about = [x for x in chromos if x.component == Component.ABOUT]

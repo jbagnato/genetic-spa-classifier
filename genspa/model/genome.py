@@ -1,3 +1,4 @@
+import copy
 import random
 
 from genspa.model.chromosome import Chromosome
@@ -71,3 +72,10 @@ class Genome:
             return False
 
         return True
+
+    def copy(self):
+        ncopied = list()
+        for c in self.components:
+            newC = copy.deepcopy(c)
+            ncopied.append(newC)
+        self.components = ncopied

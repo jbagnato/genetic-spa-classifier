@@ -178,7 +178,7 @@ class GeneticAlgorithmSPA:
         orderedlist = sorted(self.genomas, key=lambda x: x.fitness, reverse=True)
         for i in range(TOP_BEST_TO_ADD):
             for j in range(NUM_BEST_TO_ADD):
-                baby_genomes.append(copy.deepcopy(orderedlist[i]))
+                baby_genomes.append(copy.deepcopy(orderedlist[i]).copy())
 
         #with alive_bar(int(self.population_size/2), title='Generation', bar='circles', spinner='twirls') as bar2:
         self.logger.info("GENERATING NEW POPULATION")

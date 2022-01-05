@@ -67,10 +67,10 @@ class Chromosome:
             return detectAbout(image,scale=scale)
         elif self.component == Component.HEADER:
             if self.position == 0:
-                return 7.0
+                return 10.0
         elif self.component == Component.FOOTER:
             if not self.next_chromo:
-                return 7.0
+                return 8.0
 
         return 0.0
 

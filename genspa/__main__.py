@@ -70,15 +70,17 @@ def main():
 
         algo = GeneticAlgorithmSPA(web, ga.get("POP_SIZE"), ga.get("CROSSOVER_RATE"), ga.get("MUTATION_RATE"), ga.get("CHROMO_LENGTH"))
         totalEpochs = ga.get("EPOCHS")
-        for i in range(totalEpochs):
-            logger.info(f"EPOCH {i}/{ga.get('EPOCHS')}")
-            done = algo.epoch(render=True, last=i == (totalEpochs-1) )
-            #if i % infor_every == 0:
-            #algo.render(wait_seconds=2)
-            logger.debug(f"GENERATION SCORE: {algo.total_fitness_score}")
-            logger.debug(f"FITTEST GENOMA: {algo.best_fitness_score}")
-            if done:
-                break
+        with alive_bar(totalEpochs, title='PROCESSING') as bar:
+            for i in range(totalEpochs):
+                logger.info(f"EPOCH {i}/{ga.get('EPOCHS')}")
+                done = algo.epoch(render=True, last=i == (totalEpochs-1) )
+                #if i % infor_every == 0:
+                #algo.render(wait_seconds=2)
+                logger.debug(f"GENERATION SCORE: {algo.total_fitness_score}")
+                logger.debug(f"FITTEST GENOMA: {algo.best_fitness_score}")
+                if done:
+                    break
+                bar()
 
         logger.info(f"BEST GENOMA SCORE: {algo.best_fitness_score}")
         bestgen = algo.get_best_genoma()

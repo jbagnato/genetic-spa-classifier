@@ -1,4 +1,5 @@
 import random
+import joblib as jl
 
 import cv2
 import imutils
@@ -23,6 +24,7 @@ class Webpage:
     def testRoute(self, path:Genome, bar=None) -> float:
         score = 0.0
         travel_px = 0
+
         for chromo in path.components:
             if travel_px > self.height:
                 break
@@ -33,6 +35,8 @@ class Webpage:
             if bar and c_score>0.0:
                 bar.text(f"{chromo.component.name} : {c_score}")
 
+        path.set_fitness(score)
+        #bar()
         return score
 
     """Draw the components over the original image"""

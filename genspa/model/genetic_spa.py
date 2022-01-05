@@ -1,9 +1,10 @@
 import cv2
 import copy
+import concurrent.futures
 
 from alive_progress import alive_bar
 
-from genspa.constants import NUM_BEST_TO_ADD, TOP_BEST_TO_ADD
+from genspa.constants import NUM_BEST_TO_ADD, TOP_BEST_TO_ADD, N_JOBS
 from genspa.model.chromosome import Chromosome
 from genspa.model.component import Component
 from genspa.model.genome import Genome
@@ -145,16 +146,30 @@ class GeneticAlgorithmSPA:
     def update_fitness_score(self):
         self.total_fitness_score = 0.0
 
-        with alive_bar(len(self.genomas), title='CALCULATE', bar='circles', spinner='twirls') as bar3:
-            for i, genoma in enumerate(self.genomas):
-                score = self.webpage.testRoute(genoma, bar3)
-                genoma.set_fitness(score)
+        #with alive_bar(len(self.genomas), title='CALCULATE', bar='circles', spinner='twirls') as bar3:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=N_JOBS) as executor:
+            #for number, prime in zip(PRIMES, executor.map(is_prime, PRIMES)):
+            #    print('%d is prime: %s' % (number, prime))
+            #for idx, genoma in enumerate(self.genomas):
+            for score in executor.map(self.webpage.testRoute, self.genomas):
+                #score = jl.Parallel(n_jobs=N_JOBS, verbose=1, backend="multiprocessing")(
+                #    jl.delayed(self.webpage.testRoute)(genoma)  # ,bar3
+                #        for idx, genoma in enumerate(self.genomas))
+
+                #score = self.webpage.testRoute(genoma)  #, bar3)
+
+                #genoma.set_fitness(score)
                 if score > self.best_fitness_score:
                     self.best_fitness_score = score
-                    self.fittest_genome = i
-                bar3.text(f"BEST SCORE: {self.best_fitness_score}")
+                    #self.fittest_genome = idx
+                #bar3.text(f"BEST SCORE: {self.best_fitness_score}")
                 self.total_fitness_score += score
-                bar3()
+                #bar3()
+
+        for i, gen in enumerate(self.genomas):
+            if gen.fitness == self.best_fitness_score:
+                self.fittest_genome = i
+                break
 
     def create_start_popualtion(self):
         for new in range(self.population_size):

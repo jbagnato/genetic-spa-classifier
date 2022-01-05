@@ -198,9 +198,9 @@ def detectBigTitle(cv_image, scale=1.0):
 
         try:
             # Apply OCR on the cropped image
-            text = pytesseract.image_to_string(cropped, timeout=1.0)
-        except:
-            print("ERROR, TESSERACT TIMEOUT!")
+            text = pytesseract.image_to_string(cropped, timeout=1.5)
+        except Exception as e:
+            print("ERROR, TESSERACT TIMEOUT!" + str(e))
             return 0.0
 
         number_of_intros = len(text.strip().splitlines())
@@ -268,9 +268,9 @@ def detectAbout(cv_image, scale=1.0):
 
         # Apply OCR on the cropped image
         try:
-            text = pytesseract.image_to_string(cropped, timeout=1.0)
-        except:
-            print("ERROR, TESSERACT TIMEOUT!(2)")
+            text = pytesseract.image_to_string(cropped, timeout=1.5)
+        except Exception as e:
+            print("ERROR, TESSERACT TIMEOUT!(2)" + str(e))
             return 0.0
         number_of_intros = len(text.strip().splitlines())
         #print(len(text),h,w,number_of_intros,text)
@@ -290,9 +290,9 @@ def detectAbout(cv_image, scale=1.0):
 
 def detectBlank(cv_image, scale=1.0):
     try:
-        text = pytesseract.image_to_string(cv_image, timeout=1.0)
-    except:
-        print("ERROR, TESSERACT TIMEOUT!(3)")
+        text = pytesseract.image_to_string(cv_image, timeout=1.5)
+    except Exception as e:
+        print("ERROR, TESSERACT TIMEOUT!(3)" + str(e))
         return 0.0
 
     if text and type(text) == str and len(text)>4:

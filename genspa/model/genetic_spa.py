@@ -1,4 +1,5 @@
 import cv2
+import copy
 
 from alive_progress import alive_bar
 
@@ -76,7 +77,7 @@ class GeneticAlgorithmSPA:
             return mum, dad
 
         self.logger.info("Crossover")
-        cut = random.randint(0, self.components_length)
+        cut = random.randint(1, self.components_length-1)
 
         baby1 = Genome(self.components_length, self.webpage.height, self.webpage.scale,skip_generation=True)
         baby2 = Genome(self.components_length, self.webpage.height, self.webpage.scale,skip_generation=True)
@@ -92,30 +93,32 @@ class GeneticAlgorithmSPA:
             prevChromo2=None
             for i in range(self.components_length):
                 if i < cut:
-                    chromo1 = mum.components[i]
+                    chromo1 = copy.deepcopy(mum.components[i])
                     comps1.append(chromo1)
                     lastTop1 = chromo1.top + chromo1.height
                     prevChromo1 = chromo1
-                    chromo2 = dad.components[i]
+                    chromo2 = copy.deepcopy(dad.components[i])
                     comps2.append(chromo2)
                     prevChromo2 = chromo2
                     lastTop2 = chromo2.top + chromo2.height
                 else:
-                    # TODO: on first "else" here, need to update the prev and next chromosomas
+                    # need to update the prev and next chromosomas
                     # also have to adjust top and recalculate score
-                    chromo1 = dad.components[i]
+                    chromo1 = copy.deepcopy(dad.components[i])
                     chromo1.top = lastTop1
                     lastTop1 = chromo1.top + chromo1.height
                     chromo1.score=-1  # reset score because the offset
-                    prevChromo1.next_chromo=chromo1
+                    if prevChromo1:
+                        prevChromo1.next_chromo=chromo1
                     chromo1.prev_chromo = prevChromo1
                     comps1.append(chromo1)
                     prevChromo1 = chromo1
-                    chromo2 = mum.components[i]
+                    chromo2 = copy.deepcopy(mum.components[i])
                     chromo2.top = lastTop2
                     lastTop2 = chromo2.top + chromo2.height
-                    chromo2.score=-1 # reset score because the offset
-                    prevChromo2.next_chromo=chromo2
+                    chromo2.score=-1  # reset score because the offset
+                    if prevChromo2:
+                        prevChromo2.next_chromo=chromo2
                     chromo2.prev_chromo = prevChromo2
                     comps2.append(chromo2)
                     prevChromo2 = chromo2
@@ -175,7 +178,7 @@ class GeneticAlgorithmSPA:
         orderedlist = sorted(self.genomas, key=lambda x: x.fitness, reverse=True)
         for i in range(TOP_BEST_TO_ADD):
             for j in range(NUM_BEST_TO_ADD):
-                baby_genomes.append(orderedlist[i])
+                baby_genomes.append(copy.deepcopy(orderedlist[i]))
 
         #with alive_bar(int(self.population_size/2), title='Generation', bar='circles', spinner='twirls') as bar2:
         self.logger.info("GENERATING NEW POPULATION")

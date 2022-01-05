@@ -27,10 +27,11 @@ class Webpage:
             if travel_px > self.height:
                 break
 
-            score += chromo.fitness(self.site_image.copy(),scale=self.scale)
+            c_score = chromo.fitness(self.site_image.copy(), scale=self.scale)
+            score += c_score
             travel_px += chromo.height
-            if bar:
-                bar.text(f"{chromo.component.name} : {score}")
+            if bar and c_score>0.0:
+                bar.text(f"{chromo.component.name} : {c_score}")
 
         return score
 

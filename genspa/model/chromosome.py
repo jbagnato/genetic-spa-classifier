@@ -26,7 +26,7 @@ class Chromosome:
         iw = site_image.shape[1]
 
         top_anchor = self.top  #int(ih - self.top)
-        if top_anchor <= 0:
+        if top_anchor < 0:
             return 0.0
 
         bottom_anchor = int(top_anchor + self.height)
@@ -73,3 +73,15 @@ class Chromosome:
                 return 7.0
 
         return 0.0
+
+    def __str__(self):
+        if self.component:
+            return self.component.name + ", " + str(self.score)
+        else:
+            return "Chromosome, not initialized"
+
+    def __repr__(self):
+        if self.component:
+            return self.component.name + ", " + str(self.score)
+        else:
+            return "Chromosome, not initialized"

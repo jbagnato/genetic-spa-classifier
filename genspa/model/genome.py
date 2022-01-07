@@ -67,6 +67,22 @@ class Genome:
         if len(footer)>1:
             return False
 
+        gal = [x for x in chromos if x.component == Component.IMAGE_GALLERY]
+        if len(gal)>2:
+            return False
+
+        vid = [x for x in chromos if x.component == Component.VIDEO]
+        if len(vid)>1:
+            return False
+
+        form = [x for x in chromos if x.component == Component.FORM]
+        if len(form)>1:
+            return False
+
+        review = [x for x in chromos if x.component == Component.REVIEW]
+        if len(review)>1:
+            return False
+
         banner = [x for x in chromos if x.component == Component.BANNER]
         if len(banner)>2:
             return False

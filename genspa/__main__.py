@@ -87,7 +87,7 @@ def main():
         for chome in bestgen.components:
             logger.info(f"-- {chome.component.name}: {chome.score}")
 
-        algo.render(save=True)
+        algo.render(save=True,skip_no_score=True)
         cv2.destroyAllWindows()
     elif task == "test":
         WAIT_SECONDS = 2

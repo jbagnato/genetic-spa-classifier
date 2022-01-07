@@ -5,7 +5,7 @@ import glob
 import cv2
 import pytesseract
 
-from genspa.constants import DEBUG_SHOW_PATTERN_IMAGES
+from genspa.constants import DEBUG_SHOW_PATTERN_IMAGES, TESSERACT_TIMEOUT, SCREEN_RES
 
 
 def detect_big_image(cv_image, scale=1.0):
@@ -28,7 +28,7 @@ def detect_big_image(cv_image, scale=1.0):
             else:
                 cv2.putText(cv_image, "rectangle", (x, y), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 0))
 
-            if w >int(1000*scale) and h>(700*scale):
+            if w >int(500*SCREEN_RES*scale) and h>(350*SCREEN_RES*scale):
                 if DEBUG_SHOW_PATTERN_IMAGES:
                     cv2.drawContours(cv_image, [approx], 0, (0, 0, 0), 5)
                     cv2.imshow('shapes', cv_image)
@@ -70,7 +70,7 @@ def detect_image_gallery(cv_image, scale=1.0):
             else:
                 cv2.putText(cv_image, "rectangle", (x, y), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 0))
 
-            if (w >(300*scale) and h>(300*scale)) and (w < (700*scale) and h<(700*scale)):
+            if (w >(150*SCREEN_RES*scale) and h>(150*SCREEN_RES*scale)) and (w < (350*SCREEN_RES*scale) and h<(350*SCREEN_RES*scale)):
                 qty += 1
 
                 if qty >= 3:
@@ -105,7 +105,7 @@ def detect_big_button(cv_image, scale=1.0):
             else:
                 cv2.putText(cv_image, "rectangle", (x, y), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 0))
 
-            if (w >(100*scale) and h>(50*scale)) and (w < (500*scale) and h<(210*scale)):
+            if (w >(50*SCREEN_RES*scale) and h>(25*SCREEN_RES*scale)) and (w < (250*SCREEN_RES*scale) and h<(105*SCREEN_RES*scale)):
                 qty += 1
 
     if qty == 1:
@@ -133,7 +133,7 @@ def detect_product_features(cv_image, scale=1.0):
         if len(approx) == 4:
             x, y , w, h = cv2.boundingRect(approx)
             aspectRatio = float(w)/h
-            if (w >(100*scale) and h>(100*scale)) and (w < (700*scale) and h<(700*scale)):
+            if (w >(50*SCREEN_RES*scale) and h>(50*SCREEN_RES*scale)) and (w < (350*SCREEN_RES*scale) and h<(350*SCREEN_RES*scale)):
                 qty += 1
                 if qty >= 2:
                     if DEBUG_SHOW_PATTERN_IMAGES:
@@ -141,7 +141,7 @@ def detect_product_features(cv_image, scale=1.0):
                         cv2.imshow('shapes', cv_image)
                         cv2.waitKey(1)
                 # AND has to have some text
-                hasText = detectAbout(original, scale=scale, min_len=22, min_boxes=2, min_intros=1, min_box_height=60)
+                hasText = detectAbout(original, scale=scale, min_len=22, min_boxes=2, min_intros=1, min_box_height=30*SCREEN_RES)
                 if hasText>0.0:
                     return 10.0
 
@@ -169,7 +169,7 @@ def detect_banner(cv_image, scale=1.0):
             else:
                 cv2.putText(cv_image, "rectangle", (x, y), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 0))
 
-            if w >(1700*scale) and h<(400*scale):
+            if w >(850*SCREEN_RES*scale) and h<(200*SCREEN_RES*scale):
                 if DEBUG_SHOW_PATTERN_IMAGES:
                     cv2.drawContours(cv_image, [approx], 0, (0, 0, 0), 5)
                     cv2.imshow('shapes', cv_image)
@@ -249,9 +249,9 @@ def detectBigTitle(cv_image, scale=1.0):
     for cnt in contours:
         x, y, w, h = cv2.boundingRect(cnt)
 
-        if h<(113*scale):
+        if h<(56*SCREEN_RES*scale):
             continue
-        if y <(130*scale) or y > (ih - (150*scale)):
+        if y <(65*SCREEN_RES*scale) or y > (ih - (75*SCREEN_RES*scale)):
             continue
 
         # Drawing a rectangle on copied image
@@ -262,7 +262,7 @@ def detectBigTitle(cv_image, scale=1.0):
 
         try:
             # Apply OCR on the cropped image
-            text = pytesseract.image_to_string(cropped, timeout=1.5)
+            text = pytesseract.image_to_string(cropped, timeout=TESSERACT_TIMEOUT)
         except Exception as e:
             print("ERROR, TESSERACT TIMEOUT!" + str(e))
             return 0.0
@@ -271,7 +271,7 @@ def detectBigTitle(cv_image, scale=1.0):
         # Get bounding box estimates
         bounding = pytesseract.image_to_boxes(cropped,output_type='dict')
 
-        if text and type(text) == str and len(text) > 4 and w > (250*scale) and h > ((113*scale)*number_of_intros)\
+        if text and type(text) == str and len(text) > 4 and w > (125*SCREEN_RES*scale) and h > ((56*SCREEN_RES*scale)*number_of_intros)\
                 and bounding['right'][0] < w and bounding['top'][0]< h :
             #print(w,h,text)
             #print(boundes['left'][0],boundes['bottom'][0],boundes['right'][0],boundes['top'][0])
@@ -288,7 +288,7 @@ def detectBigTitle(cv_image, scale=1.0):
     return 0.0
 
 
-def detectAbout(cv_image, scale=1.0, min_len=30, min_boxes=4, min_intros=1, min_box_height=100):
+def detectAbout(cv_image, scale=1.0, min_len=30, min_boxes=4, min_intros=1, min_box_height=50*SCREEN_RES):
     # Convert the image to gray scale
     gray = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
 
@@ -332,14 +332,14 @@ def detectAbout(cv_image, scale=1.0, min_len=30, min_boxes=4, min_intros=1, min_
 
         # Apply OCR on the cropped image
         try:
-            text = pytesseract.image_to_string(cropped, timeout=1.5)
+            text = pytesseract.image_to_string(cropped, timeout=TESSERACT_TIMEOUT)
         except Exception as e:
             print("ERROR, TESSERACT TIMEOUT!(2)" + str(e))
             return 0.0
         number_of_intros = len(text.strip().splitlines())
         #print(len(text),h,w,number_of_intros,text)
 
-        if text and type(text) == str and len(text)>4 and h>(100*scale) and number_of_intros > min_intros:
+        if text and type(text) == str and len(text)>4 and h>(50*SCREEN_RES*scale) and number_of_intros > min_intros:
             cv2.drawContours(cv_image, cnt, 0, (0, 0, 0), 5)
             accum_text += " " + text
             qty += 1
@@ -354,7 +354,7 @@ def detectAbout(cv_image, scale=1.0, min_len=30, min_boxes=4, min_intros=1, min_
 
 def detectBlank(cv_image, scale=1.0):
     try:
-        text = pytesseract.image_to_string(cv_image, timeout=1.5)
+        text = pytesseract.image_to_string(cv_image, timeout=TESSERACT_TIMEOUT)
     except Exception as e:
         print("ERROR, TESSERACT TIMEOUT!(3)" + str(e))
         return 0.0

@@ -1,13 +1,14 @@
 import copy
 import random
 
+from genspa.constants import SCREEN_RES
 from genspa.model.chromosome import Chromosome
 from genspa.model.component import Component
 
 
 class Genome:
 
-    def __init__(self, max_components=10, height_px=4096, scale=1, skip_generation=False):
+    def __init__(self, max_components=10, height_px=2048*SCREEN_RES, scale=1, skip_generation=False):
         self.components = list()
         self.fitness = 0.0
         self.scale = scale
@@ -23,7 +24,7 @@ class Genome:
         prev_chromo = None
         prevTop=0
         components = list()
-        base_size = max(int(height_px / max_components), int(350*self.scale))
+        base_size = max(int(height_px / max_components), int(175*SCREEN_RES*self.scale))
         for i in range(max_components):
             randomIncrement = random.randint(0, base_size)
             top = prevTop  # (int(height_px/max_components)*i)
@@ -56,7 +57,7 @@ class Genome:
         if len(headers)>1:
             return False
 
-        badHeaders = [x for x in chromos if x.component == Component.HEADER and x.height>700]
+        badHeaders = [x for x in chromos if x.component == Component.HEADER and x.height>(350*SCREEN_RES)]
         if len(badHeaders)>1:
             return False
 
@@ -68,11 +69,11 @@ class Genome:
         if len(banner)>2:
             return False
 
-        badBanner = [x for x in chromos if x.component == Component.BANNER and x.height > (450*scale)]
+        badBanner = [x for x in chromos if x.component == Component.BANNER and x.height > (225*SCREEN_RES*scale)]
         if len(badBanner)>0:
             return False
 
-        bad_big_pic = [x for x in chromos if (x.component == Component.BIG_IMAGE) and (x.height < (400*scale))]
+        bad_big_pic = [x for x in chromos if (x.component == Component.BIG_IMAGE) and (x.height < (200*SCREEN_RES*scale))]
         if len(bad_big_pic) > 0:
             return False
 

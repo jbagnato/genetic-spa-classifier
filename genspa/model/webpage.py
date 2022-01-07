@@ -5,6 +5,7 @@ import cv2
 import imutils
 from alive_progress import alive_bar
 
+from genspa.constants import SCREEN_RES
 from genspa.model.genome import Genome
 
 
@@ -32,7 +33,7 @@ class Webpage:
             c_score = chromo.fitness(self.site_image.copy(), scale=self.scale)
             score += c_score
             travel_px += chromo.height
-            if bar and c_score>0.0:
+            if bar and c_score > 0.0:
                 bar.text(f"{chromo.component.name} : {c_score}")
 
         path.set_fitness(score)
@@ -40,11 +41,14 @@ class Webpage:
         return score
 
     """Draw the components over the original image"""
-    def render(self, path_list, wait_seconds=2):
+    def render(self, path_list, wait_seconds=2, skip_no_score=False):
         image = self.site_image.copy()
 
         # iterate chromosomas and draw each rectangle and color
         for chromo in path_list.components:
+            if skip_no_score and chromo.score <=0:
+                continue
+
             top_anchor = chromo.top  #int(self.height - chromo.top)
             if top_anchor <= 0:
                 top_anchor = 0
@@ -53,13 +57,13 @@ class Webpage:
             if bottom_anchor > self.height:
                 bottom_anchor = self.height
 
-            color = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-            thickness = int(14*self.scale)
+            color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+            thickness = int(7*SCREEN_RES*self.scale)
             cv2.rectangle(image, (0+thickness, top_anchor+thickness), (self.width-thickness, bottom_anchor-thickness), color, thickness)
             font = cv2.FONT_HERSHEY_SIMPLEX
             # fontScale
-            fontScale = max(int(3*self.scale),1)
-            org = (30, bottom_anchor - 30)
+            fontScale = max(int(1.5*SCREEN_RES*self.scale), 1)
+            org = (15*SCREEN_RES, bottom_anchor - (15*SCREEN_RES))
             image = cv2.putText(image, str(chromo.component.name) + " " + str(chromo.score), org, font, fontScale, color, thickness, cv2.LINE_AA)
 
         cv2.namedWindow('Image', cv2.WINDOW_GUI_NORMAL)  # WINDOW_AUTOSIZE WINDOW_NORMAL

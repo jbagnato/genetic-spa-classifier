@@ -211,8 +211,8 @@ class GeneticAlgorithmSPA:
 
         return False
 
-    def render(self, wait_seconds=1, save=False):
-        img = self.webpage.render(self.genomas[self.fittest_genome], wait_seconds)
+    def render(self, wait_seconds=1, save=False, skip_no_score=False):
+        img = self.webpage.render(self.genomas[self.fittest_genome], wait_seconds, skip_no_score=skip_no_score)
         if save:
             cv2.imwrite('output.png', img)
 

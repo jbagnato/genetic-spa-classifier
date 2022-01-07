@@ -3,9 +3,9 @@
     "CROSSOVER_RATE": 0.7,
     "MUTATION_RATE": 0.02,
     "DOC_MUTATION_RATE": 0.001,
-    "POP_SIZE": 75,
-    "CHROMO_LENGTH": 15,
-    "EPOCHS": 27,
+    "POP_SIZE": 30,
+    "CHROMO_LENGTH": 10,
+    "EPOCHS": 20,
     "scale": 0.25
   },
 

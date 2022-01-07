@@ -12,6 +12,8 @@ class Genome:
         self.components = list()
         self.fitness = 0.0
         self.scale = scale
+        self.screen_height = height_px
+        self.max_components = max_components
         valid = False
         if not skip_generation:
             while not valid:
@@ -107,4 +109,16 @@ class Genome:
                 chromo.score = -1  # reset score
 
         chromos = [x for i, x in enumerate(chromos) if i not in to_delete]
+        # complete with blank blocks at the end
+        for i in range(len(to_delete)):
+            chromo = Chromosome(Component.BLANK,
+                                top=self.screen_height,
+                                height_px=100,
+                                position= self.max_components - i,
+                                prev_chromo=None,
+                                next_chromo=None
+                                )
+
+            chromos.append(chromo)
+
         return chromos

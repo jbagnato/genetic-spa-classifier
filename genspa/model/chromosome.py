@@ -22,7 +22,7 @@ class Chromosome(dict):
         self.text = None
         self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
         self.logger = getLogger()
-        dict.__init__(self, name=component.name, top=top, height=height_px, score=0, position=position)
+        dict.__init__(self, name=component.name, top=top, height=height_px, score=0.0, position=position)
 
 
     """depending on the component, this function will calculate the value of fitness
@@ -49,6 +49,7 @@ class Chromosome(dict):
         #self.logger.debug(f"scoreComponent {self.component.name}")
         try:
             self.score = self.scoreComponent(cropped,scale=scale)
+            super().__setitem__("score", self.score)
         except:
             self.score = 0.0
         #self.logger.debug(f"END scoreComponent: {self.score}")

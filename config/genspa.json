@@ -5,8 +5,8 @@
     "DOC_MUTATION_RATE": 0.001,
     "POP_SIZE": 10,
     "CHROMO_LENGTH": 9,
-    "EPOCHS": 24,
-    "scale": 0.065
+    "EPOCHS": 22,
+    "scale": 0.06
   },
   "sites": ["https://afallonmon.com",
     "https://gotcha.dk",

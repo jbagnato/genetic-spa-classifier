@@ -47,13 +47,13 @@ genspa train config/genspa.json wandure.png
 
 ## TODO:
 
-* add json to results with offset and score
 * new ways of cross in 2 point
 * fix some components overlap
 * try diverse mutation, ex. only size, only component
 
 ## DONE
 
+* add json to results with offset and score
 * detect certain icons to increase accuracy
 * improve detection time on "about" pattern
 * add "classism" and better roulette

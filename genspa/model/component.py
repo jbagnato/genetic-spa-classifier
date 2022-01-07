@@ -22,15 +22,16 @@ class Component(IntEnum):
     BIG_BUTTONS = 206  # may be to redirect to categories or other sections
 #    QUOTE = 207  #
 
-#    VIDEO = 301
+    VIDEO = 301
     BIG_IMAGE = 302  # and/or slider
     IMAGE_GALLERY = 303  # may be recomended items, related, popular, trending
 #    BADGES = 304
 
+    FORM = 400
 #    SUBSCRIPTION_FORM = 401
 #    CONTACT_FORM = 402
 
-#    TESTIMONIAL = 501  # and Reviews, Ratings
+    REVIEW = 501  # TESTIMONIAL, Reviews, Ratings
 #    PRESS_OR_MEDIA = 502
 
 #    CALL_TO_ACTION = 601

@@ -141,7 +141,7 @@ def detect_product_features(cv_image, scale=1.0):
                         cv2.imshow('shapes', cv_image)
                         cv2.waitKey(1)
                 # AND has to have some text
-                hasText = detectAbout(original, scale=scale, min_len=22, min_boxes=2, min_intros=1, min_box_height=30*SCREEN_RES)
+                hasText = detectAbout(original, scale=scale, min_len=20, min_boxes=2, min_intros=1, min_box_height=20*SCREEN_RES)
                 if hasText>0.0:
                     return 10.0
 
@@ -356,7 +356,7 @@ def detectBlank(cv_image, scale=1.0):
     try:
         text = pytesseract.image_to_string(cv_image, timeout=TESSERACT_TIMEOUT)
     except Exception as e:
-        print("ERROR, TESSERACT TIMEOUT!(3)" + str(e))
+        #print("ERROR, TESSERACT TIMEOUT!(3)" + str(e))
         return 0.0
 
     if text and type(text) == str and len(text)>4:
@@ -386,3 +386,19 @@ def detectBlank(cv_image, scale=1.0):
             return 0.0
 
     return 6.0
+
+
+def detect_form(cv_image, scale=1.0):
+    try:
+        text = pytesseract.image_to_string(cv_image, timeout=TESSERACT_TIMEOUT)
+    except Exception as e:
+        #print("ERROR, TESSERACT TIMEOUT!(3)" + str(e))
+        return 0.0
+
+    if text and type(text) == str and len(text)>3:
+        possible= ["sign up","sign me up","subscribe","submit", "send", "email", "notify me","subscription"]
+        for s in possible:
+            if text.lower().find(s) >=0:
+                return 7.0
+
+    return 0.0

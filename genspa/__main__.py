@@ -97,7 +97,7 @@ def main():
         scale = 1
         #height = int(820*scale)
         height = int(820*scale)
-        chromo = Chromosome(Component.ABOUT,0,height)
+        chromo = Chromosome(Component.HEADER,0,height)
         webimage = cv2.imread(IMG_DIR + args.image)
         webimage = imutils.resize(webimage, width=int(webimage.shape[1] * scale))
 
@@ -105,7 +105,7 @@ def main():
         iw = webimage.shape[1]
         logger.info(f"IMAGE readed: {iw}px x {ih}px")
         for i in range(int(30)):
-            offset = 3300 + int(i*(height/3))
+            offset = 0 + int(i*(height/3))
             print("OFFset", offset)
             cropped = webimage[offset:offset+height, 0:int(iw)]
             logger.info(f"CROPPED: {iw}px x {height}px offset: {offset}")

@@ -1,7 +1,8 @@
-from genspa.constants import SCREEN_RES
+from genspa.constants import SCREEN_RES, PATTERN_DIR
 from genspa.model.component import Component
+from genspa.model.tools.icon_detect import findIconInImage
 from genspa.model.tools.pattern_recognition import detect_big_image, detect_image_gallery, detect_banner, \
-    detectBigTitle, detectAbout, detectBlank, detect_product_features, detect_big_button
+    detectBigTitle, detectAbout, detectBlank, detect_product_features, detect_big_button, detect_form
 from genspa.util.logger_utils import getLogger
 
 
@@ -56,7 +57,10 @@ class Chromosome:
         if self.component == Component.BIG_IMAGE:
             return detect_big_image(image, scale=scale)
         elif self.component == Component.IMAGE_GALLERY:
-            return detect_image_gallery(image, scale=scale)
+            base = detect_image_gallery(image, scale=scale)
+            p_list = ["gal01_next.jpg", "gal02_next.jpg", "gal03_next.jpg", "gal04_next.jpg", "gal05_next.jpg"]
+            add = findIconInImage(p_list, image)
+            return base + add
         elif self.component == Component.BANNER:
             score = detect_banner(image, scale=scale)
             if score > 0 and self.position == 0 or (not self.next_chromo):
@@ -71,12 +75,27 @@ class Chromosome:
         elif self.component == Component.TEXT_PARAGRAPH:
             return detectAbout(image, scale=scale, min_len=55, min_boxes=1, min_intros=3, min_box_height=175*SCREEN_RES)
         elif self.component == Component.PRODUCT_FEATURES:
-            return detect_product_features(image,scale=scale)
+            base = detect_product_features(image, scale=scale)
+            p_list = ["like01_icon.jpg", "like02_icon.jpg"]
+            add = findIconInImage(p_list, image)
+            return base + add
         elif self.component == Component.BLANK:
             return detectBlank(image, scale=scale)
+        elif self.component == Component.FORM:
+            return detect_form(image, scale=scale)
+        elif self.component == Component.VIDEO:
+            p_list = ["play01.jpg", "play02.jpg"]
+            return findIconInImage(p_list, image)
+        elif self.component == Component.REVIEW:
+            p_list = ["rating01_icon.jpg", "rating02_icon.jpg","rating03_icon.jpg", "rating04_icon.jpg", "rating05_icon.jpg"]
+            return findIconInImage(p_list, image)
         elif self.component == Component.HEADER:
+            p_list = ["menu_icon.jpg","cart_icon.jpg", "bag_icon.jpg"]
+            res = findIconInImage(p_list, image)
             if self.position == 0:
-                return 10.0
+                base = 6.0
+                return base + res
+            return res
         elif self.component == Component.FOOTER:
             if not self.next_chromo:
                 return 8.0

@@ -85,7 +85,7 @@ class GeneticAlgorithmSPA:
 
         valid = False
         retries = 0
-        while (not valid) and retries < 10:
+        while (not valid) and retries < 20:
             comps1=list()
             comps2=list()
             lastTop1 = 0

@@ -344,7 +344,7 @@ def detectAbout(cv_image, scale=1.0, min_len=30, min_boxes=4, min_intros=1, min_
             accum_text += " " + text
             qty += 1
 
-            if qty >= min_boxes or len(accum_text) > min_len:
+            if qty >= min_boxes and len(accum_text) > min_len:
                 if DEBUG_SHOW_PATTERN_IMAGES:
                     cv2.imshow('text', cv_image)
                     cv2.waitKey(1)

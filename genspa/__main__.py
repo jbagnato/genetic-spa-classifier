@@ -78,16 +78,18 @@ def main():
                 #algo.render(wait_seconds=2)
                 logger.debug(f"GENERATION SCORE: {algo.total_fitness_score}")
                 logger.debug(f"FITTEST GENOMA: {algo.best_fitness_score}")
+                bar()
                 if done:
                     break
-                bar()
 
         logger.info(f"BEST GENOMA SCORE: {algo.best_fitness_score}")
         bestgen = algo.get_best_genoma()
         for chome in bestgen.components:
             logger.info(f"-- {chome.component.name}: {chome.score}")
 
-        algo.render(save=True,skip_no_score=True)
+        algo.render(save=True)
+        algo.render(save=True, skip_no_score=True, filename=f"output-{args.image}")
+
         cv2.destroyAllWindows()
     elif task == "test":
         WAIT_SECONDS = 2

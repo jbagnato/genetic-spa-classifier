@@ -123,11 +123,11 @@ class GeneticAlgorithmSPA:
                     chromo2.prev_chromo = prevChromo2
                     comps2.append(chromo2)
                     prevChromo2 = chromo2
-            valid = baby1.testGenome(comps1,self.webpage.scale) and baby2.testGenome(comps2,self.webpage.scale)
+            valid = baby1.testGenome(comps1, self.webpage.scale) and baby2.testGenome(comps2, self.webpage.scale)
             retries += 1
 
-        baby1.components = comps1
-        baby2.components = comps2
+        baby1.components = baby1.fusion(comps1)
+        baby2.components = baby2.fusion(comps2)
 
         return baby1, baby2
 
@@ -146,25 +146,11 @@ class GeneticAlgorithmSPA:
     def update_fitness_score(self):
         self.total_fitness_score = 0.0
 
-        #with alive_bar(len(self.genomas), title='CALCULATE', bar='circles', spinner='twirls') as bar3:
         with concurrent.futures.ThreadPoolExecutor(max_workers=N_JOBS) as executor:
-            #for number, prime in zip(PRIMES, executor.map(is_prime, PRIMES)):
-            #    print('%d is prime: %s' % (number, prime))
-            #for idx, genoma in enumerate(self.genomas):
             for score in executor.map(self.webpage.testRoute, self.genomas):
-                #score = jl.Parallel(n_jobs=N_JOBS, verbose=1, backend="multiprocessing")(
-                #    jl.delayed(self.webpage.testRoute)(genoma)  # ,bar3
-                #        for idx, genoma in enumerate(self.genomas))
-
-                #score = self.webpage.testRoute(genoma)  #, bar3)
-
-                #genoma.set_fitness(score)
                 if score > self.best_fitness_score:
                     self.best_fitness_score = score
-                    #self.fittest_genome = idx
-                #bar3.text(f"BEST SCORE: {self.best_fitness_score}")
                 self.total_fitness_score += score
-                #bar3()
 
         for i, gen in enumerate(self.genomas):
             if gen.fitness == self.best_fitness_score:
@@ -184,18 +170,14 @@ class GeneticAlgorithmSPA:
             # we found best posible solution
             return True
 
-        #new_babies = 0
         baby_genomes = list()
 
-        #for i in range(NUM_BEST_TO_ADD):
-        #    baby_genomes.append(self.genomas[self.fittest_genome])
         # To return a new list, use the sorted() built-in function...
         orderedlist = sorted(self.genomas, key=lambda x: x.fitness, reverse=True)
         for i in range(TOP_BEST_TO_ADD):
             for j in range(NUM_BEST_TO_ADD):
                 baby_genomes.append(copy.deepcopy(orderedlist[i]).copy())
 
-        #with alive_bar(int(self.population_size/2), title='Generation', bar='circles', spinner='twirls') as bar2:
         self.logger.info("GENERATING NEW POPULATION")
         while len(baby_genomes) < self.population_size:
             mum = self.roulette_wheel_selection()
@@ -211,10 +193,10 @@ class GeneticAlgorithmSPA:
 
         return False
 
-    def render(self, wait_seconds=1, save=False, skip_no_score=False):
+    def render(self, wait_seconds=1, save=False, skip_no_score=False, filename='output.png'):
         img = self.webpage.render(self.genomas[self.fittest_genome], wait_seconds, skip_no_score=skip_no_score)
         if save:
-            cv2.imwrite('output.png', img)
+            cv2.imwrite(filename, img)
 
     def get_best_genoma(self):
         return self.genomas[self.fittest_genome]

@@ -44,29 +44,40 @@ class Webpage:
     def render(self, path_list, wait_seconds=2, skip_no_score=False):
         image = self.site_image.copy()
 
+        skip_similar = False
         # iterate chromosomas and draw each rectangle and color
         for chromo in path_list.components:
-            if skip_no_score and chromo.score <=0:
+            if skip_no_score and chromo.score <= 0:
                 continue
 
             top_anchor = chromo.top  #int(self.height - chromo.top)
             if top_anchor <= 0:
                 top_anchor = 0
 
-            bottom_anchor = int(top_anchor + chromo.height)
+            if chromo.next_chromo and chromo.next_chromo.component == chromo.component:
+                bottom_anchor = int(top_anchor + chromo.next_chromo.height)
+            else:
+                bottom_anchor = int(top_anchor + chromo.height)
+
             if bottom_anchor > self.height:
                 bottom_anchor = self.height
 
-            color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-            thickness = int(7*SCREEN_RES*self.scale)
-            cv2.rectangle(image, (0+thickness, top_anchor+thickness), (self.width-thickness, bottom_anchor-thickness), color, thickness)
-            font = cv2.FONT_HERSHEY_SIMPLEX
-            # fontScale
-            fontScale = max(int(1.5*SCREEN_RES*self.scale), 1)
-            org = (int(15*SCREEN_RES), int(bottom_anchor - (15*SCREEN_RES)))
-            image = cv2.putText(image, str(chromo.component.name) + " " + str(chromo.score), org, font, fontScale, color, thickness, cv2.LINE_AA)
+            if not skip_similar:
+                color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+                thickness = int(7*SCREEN_RES*self.scale)
+                cv2.rectangle(image, (0+thickness, top_anchor+thickness), (self.width-thickness, bottom_anchor-thickness), color, thickness)
+                font = cv2.FONT_HERSHEY_SIMPLEX
+                # fontScale
+                fontScale = max(int(1.5*SCREEN_RES*self.scale), 1)
+                org = (int(15*SCREEN_RES), int(bottom_anchor - (15*SCREEN_RES)))
+                image = cv2.putText(image, str(chromo.component.name) + " " + str(chromo.score), org, font, fontScale, color, thickness, cv2.LINE_AA)
 
-        cv2.namedWindow('Image', cv2.WINDOW_GUI_NORMAL)  # WINDOW_AUTOSIZE WINDOW_NORMAL
+            if chromo.next_chromo and chromo.next_chromo.component == chromo.component:
+                skip_similar = True
+            else:
+                skip_similar = False
+
+        cv2.namedWindow('Image', cv2.WINDOW_AUTOSIZE)  # WINDOW_AUTOSIZE WINDOW_NORMAL WINDOW_GUI_NORMAL
         cv2.imshow("Image", image)
         cv2.waitKey(int(wait_seconds))
         return image

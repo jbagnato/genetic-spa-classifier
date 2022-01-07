@@ -17,7 +17,7 @@ class Genome:
             while not valid:
                 generated = self.generateRandomGenoma(height_px, max_components)
                 if self.testGenome(generated, scale):
-                    self.components = generated
+                    self.components = self.fusion(generated)
                     valid = True
 
     def generateRandomGenoma(self, height_px, max_components) -> list:
@@ -95,3 +95,16 @@ class Genome:
         self.components = ncopied
 
         return self
+
+    def fusion(self, chromos):
+        to_delete=[]
+        for i, chromo in enumerate(chromos):
+            if chromo.next_chromo and chromo.next_chromo.component == chromo.component:
+                to_delete.append(i)
+                chromo.height = chromo.height + chromo.next_chromo.height
+                # if there are more than 2
+                chromo.next_chromo.top = chromo.top
+                chromo.score = -1  # reset score
+
+        chromos = [x for i, x in enumerate(chromos) if i not in to_delete]
+        return chromos

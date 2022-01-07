@@ -4,7 +4,7 @@ import concurrent.futures
 
 from alive_progress import alive_bar
 
-from genspa.constants import NUM_BEST_TO_ADD, TOP_BEST_TO_ADD, N_JOBS
+from genspa.constants import NUM_BEST_TO_ADD, TOP_BEST_TO_ADD, N_JOBS, MAX_SCORE_STOP
 from genspa.model.chromosome import Chromosome
 from genspa.model.component import Component
 from genspa.model.genome import Genome
@@ -85,7 +85,7 @@ class GeneticAlgorithmSPA:
 
         valid = False
         retries = 0
-        while (not valid) and retries < 20:
+        while (not valid) and retries < (10*self.components_length):
             comps1=list()
             comps2=list()
             lastTop1 = 0
@@ -161,14 +161,15 @@ class GeneticAlgorithmSPA:
         for new in range(self.population_size):
             self.genomas.append(Genome(self.components_length, self.webpage.height, self.webpage.scale))
 
-    def epoch(self, render=False, last=False) -> bool:
+    def epoch(self, render=False, last=False):
         self.update_fitness_score()
+        img = None
         if render:
-            self.render(2)
+            img = self.render(2)
 
-        if self.best_fitness_score >= (10 * self.components_length) or last:
+        if self.best_fitness_score >= (MAX_SCORE_STOP * self.components_length) or last:
             # we found best posible solution
-            return True
+            return True, img
 
         baby_genomes = list()
 
@@ -191,12 +192,19 @@ class GeneticAlgorithmSPA:
         self.genomas = baby_genomes
         self.generation += 1
 
-        return False
+        return False, img
 
     def render(self, wait_seconds=1, save=False, skip_no_score=False, filename='output.png'):
         img = self.webpage.render(self.genomas[self.fittest_genome], wait_seconds, skip_no_score=skip_no_score)
         if save:
             cv2.imwrite(filename, img)
+        return img
 
     def get_best_genoma(self):
         return self.genomas[self.fittest_genome]
+
+    def saveJson(self, bestgen:Genome, filename:str):
+        import json
+        with open(filename, 'w') as f:
+            f.write(json.dumps(bestgen.components, indent=4))
+

@@ -3,7 +3,7 @@ pytest==6.2.5
 pytest-cov
 wheel
 prompt_toolkit==1.0.14
-PyInquirer
+PyInquirer~=1.0.3
 numpy==1.19.5
 imutils==0.5.4
 opencv-python==4.5.4.60
@@ -13,3 +13,4 @@ selenium==3.141.0
 alive-progress
 pytesseract==0.3.8
 joblib==1.1.0
+imageio==2.13.5

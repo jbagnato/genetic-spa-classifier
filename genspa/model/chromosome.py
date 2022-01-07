@@ -73,7 +73,7 @@ class Chromosome:
         elif self.component == Component.ABOUT:
             return detectAbout(image, scale=scale)
         elif self.component == Component.TEXT_PARAGRAPH:
-            return detectAbout(image, scale=scale, min_len=55, min_boxes=1, min_intros=3, min_box_height=175*SCREEN_RES)
+            return detectAbout(image, scale=scale, min_len=55, min_boxes=1, min_intros=2, min_box_height=175*SCREEN_RES)
         elif self.component == Component.PRODUCT_FEATURES:
             base = detect_product_features(image, scale=scale)
             p_list = ["like01_icon.jpg", "like02_icon.jpg"]
@@ -113,3 +113,12 @@ class Chromosome:
             return self.component.name + ", " + str(self.score)
         else:
             return "Chromosome, not initialized"
+
+    def to_json(self):
+        return {
+            "name": self.component.name,
+            "score": self.score,
+            "top": self.top,
+            "height": self.height,
+            "position": self.position,
+        }

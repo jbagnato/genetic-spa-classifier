@@ -1,12 +1,14 @@
 import os
 from time import sleep
+# for saving gif
+import imageio
 
 import cv2
 import imutils
 
 from alive_progress import alive_bar
 
-from genspa.constants import IMG_DIR
+from genspa.constants import IMG_DIR, OUT_DIR
 from genspa.model.chromosome import Chromosome
 from genspa.model.component import Component
 from genspa.model.genetic_spa import GeneticAlgorithmSPA
@@ -70,10 +72,12 @@ def main():
 
         algo = GeneticAlgorithmSPA(web, ga.get("POP_SIZE"), ga.get("CROSSOVER_RATE"), ga.get("MUTATION_RATE"), ga.get("CHROMO_LENGTH"))
         totalEpochs = ga.get("EPOCHS")
+        images = []
         with alive_bar(totalEpochs, title='PROCESSING') as bar:
             for i in range(totalEpochs):
                 logger.info(f"EPOCH {i}/{ga.get('EPOCHS')}")
-                done = algo.epoch(render=True, last=i == (totalEpochs-1) )
+                done, img= algo.epoch(render=True, last=i == (totalEpochs-1) )
+                images.append(img)
                 #if i % infor_every == 0:
                 #algo.render(wait_seconds=2)
                 logger.debug(f"GENERATION SCORE: {algo.total_fitness_score}")
@@ -88,7 +92,9 @@ def main():
             logger.info(f"-- {chome.component.name}: {chome.score}")
 
         algo.render(save=True)
-        algo.render(save=True, skip_no_score=True, filename=f"output-{args.image}")
+        algo.render(save=True, skip_no_score=True, filename=f"{OUT_DIR}output-{args.image}")
+        imageio.mimsave(f"{OUT_DIR}output-{args.image[:-4]}.gif", images, fps=6, duration=2.0)
+        algo.saveJson(bestgen, filename=f"{OUT_DIR}output-{args.image[:-4]}.json")
 
         cv2.destroyAllWindows()
     elif task == "test":

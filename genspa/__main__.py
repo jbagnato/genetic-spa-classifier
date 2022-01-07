@@ -93,7 +93,7 @@ def main():
 
         algo.render(save=True)
         algo.render(save=True, skip_no_score=True, filename=f"{OUT_DIR}output-{args.image}")
-        imageio.mimsave(f"{OUT_DIR}output-{args.image[:-4]}.gif", images, fps=6, duration=2.0)
+        imageio.mimsave(f"{OUT_DIR}output-{args.image[:-4]}.gif", images, duration=0.8)  # fps=6,
         algo.saveJson(bestgen, filename=f"{OUT_DIR}output-{args.image[:-4]}.json")
 
         cv2.destroyAllWindows()

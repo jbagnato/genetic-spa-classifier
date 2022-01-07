@@ -63,7 +63,7 @@ class Webpage:
                 bottom_anchor = self.height
 
             if not skip_similar:
-                color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+                color = chromo.color #(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
                 thickness = int(7*SCREEN_RES*self.scale)
                 cv2.rectangle(image, (0+thickness, top_anchor+thickness), (self.width-thickness, bottom_anchor-thickness), color, thickness)
                 font = cv2.FONT_HERSHEY_SIMPLEX

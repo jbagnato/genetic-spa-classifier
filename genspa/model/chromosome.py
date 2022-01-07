@@ -1,3 +1,6 @@
+import random
+import json
+
 from genspa.constants import SCREEN_RES, PATTERN_DIR
 from genspa.model.component import Component
 from genspa.model.tools.icon_detect import findIconInImage
@@ -6,7 +9,7 @@ from genspa.model.tools.pattern_recognition import detect_big_image, detect_imag
 from genspa.util.logger_utils import getLogger
 
 
-class Chromosome:
+class Chromosome(dict):
 
     def __init__(self, component: Component, top, height_px=205*SCREEN_RES, position=0, prev_chromo=None, next_chromo=None):
         self.component = component
@@ -17,7 +20,10 @@ class Chromosome:
         self.prev_chromo = prev_chromo
         self.next_chromo = next_chromo
         self.text = None
+        self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
         self.logger = getLogger()
+        dict.__init__(self, name=component.name, top=top, height=height_px, score=0, position=position)
+
 
     """depending on the component, this function will calculate the value of fitness
     on the part of the image it is situated"""
@@ -122,3 +128,10 @@ class Chromosome:
             "height": self.height,
             "position": self.position,
         }
+
+    #def toJSON(self):
+    #    return json.dumps(self, default=lambda o: o.__dict__,
+    #                      sort_keys=True, indent=4)
+
+    def toJson(self):
+        return json.dumps(self, default=lambda o: o.__dict__)

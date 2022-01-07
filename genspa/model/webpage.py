@@ -63,7 +63,7 @@ class Webpage:
             font = cv2.FONT_HERSHEY_SIMPLEX
             # fontScale
             fontScale = max(int(1.5*SCREEN_RES*self.scale), 1)
-            org = (15*SCREEN_RES, bottom_anchor - (15*SCREEN_RES))
+            org = (int(15*SCREEN_RES), int(bottom_anchor - (15*SCREEN_RES)))
             image = cv2.putText(image, str(chromo.component.name) + " " + str(chromo.score), org, font, fontScale, color, thickness, cv2.LINE_AA)
 
         cv2.namedWindow('Image', cv2.WINDOW_GUI_NORMAL)  # WINDOW_AUTOSIZE WINDOW_NORMAL

@@ -74,7 +74,7 @@ def findIconInImage(pattern_list, image, anchorThreshold=5000000, visualize=Fals
             # unpack the bookkeeping varaible and compute the (x, y) coordinates
             # of the bounding box based on the resized ratio
             (maxVal, maxLoc, r) = found
-            print(maxVal)
+            #print(maxVal)
             (startX, startY) = (int(maxLoc[0] * r), int(maxLoc[1] * r))
             (endX, endY) = (int((maxLoc[0] + tW) * r), int((maxLoc[1] + tH) * r))
 
@@ -89,7 +89,7 @@ def findIconInImage(pattern_list, image, anchorThreshold=5000000, visualize=Fals
                 cv2.namedWindow('Image', cv2.WINDOW_NORMAL)  # WINDOW_AUTOSIZE
                 cv2.imshow("Image", image)
                 cv2.waitKey(int(2))
-            return maxVal * 1000 / 10000000
+            return maxVal * 10 / 10000000
         #else:
     return 0.0
 

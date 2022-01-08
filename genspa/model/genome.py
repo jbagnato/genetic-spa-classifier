@@ -37,8 +37,9 @@ class Genome:
             top = prevTop  # (int(height_px/max_components)*i)
             height = int(base_size / 2) + randomIncrement
             prevTop = top + height
-            if i==0:
+            if i == 0:
                 kind = Component.HEADER
+                height = max(height, 300*SCREEN_RES*self.scale)
             elif i == (max_components - 1):
                 kind = Component.FOOTER
             else:
@@ -76,7 +77,7 @@ class Genome:
         headers = [x for x in chromos if x.component == Component.HEADER]
         if len(headers) > 1:
             return False
-        if len(headers)==1 and headers[0].height>(350*SCREEN_RES):
+        if len(headers)==1 and headers[0].height>(350*SCREEN_RES*scale):
             return False
 
         footer = [x for x in chromos if x.component == Component.FOOTER]

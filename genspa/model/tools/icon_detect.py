@@ -36,7 +36,7 @@ def findIconInImage(pattern_list, image, anchorThreshold=5000000, visualize=Fals
         (tH, tW) = template.shape[:2]
 
         #anchorThreshold = args.get("threshold")  # recommended 4700000
-        scaleRange = np.linspace(0.6, 1.3, 10)
+        scaleRange = np.linspace(0.8, 1.2, 10)
 
         # loop over the images to find the template in
     #    for imagePath in sorted(searchImages):

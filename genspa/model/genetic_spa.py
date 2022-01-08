@@ -36,7 +36,7 @@ class GeneticAlgorithmSPA:
     def mutate(self, genoma:Genome, changeKind=True):
         valid = False
         retries = 0
-        while (not valid) and retries < (10*self.components_length):
+        while (not valid) and retries < (self.components_length):
             newGeoma = copy.deepcopy(genoma.components)
             for i, chromo in enumerate(newGeoma):
                 if random.randint(0,100)/100 < self.mutation_rate:
@@ -87,21 +87,21 @@ class GeneticAlgorithmSPA:
             return mum, dad
 
         #self.logger.info("Crossover")
-        cut = random.randint(1, self.components_length-1)
+        cut = random.randint(1, min(len(mum.components), len(dad.components))-1)#self.components_length-1)
 
         baby1 = Genome(self.components_length, self.webpage.height, self.webpage.scale,skip_generation=True)
         baby2 = Genome(self.components_length, self.webpage.height, self.webpage.scale,skip_generation=True)
 
         valid = False
         retries = 0
-        while (not valid) and retries < (10*self.components_length):
+        while (not valid) and retries < (self.components_length):
             comps1=list()
             comps2=list()
             lastTop1 = 0
             lastTop2 = 0
             prevChromo1=None
             prevChromo2=None
-            for i in range(self.components_length):
+            for i in range(min(len(mum.components), len(dad.components))):#self.components_length):
                 if i < cut:
                     chromo1 = copy.deepcopy(mum.components[i])
                     comps1.append(chromo1)

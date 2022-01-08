@@ -8,7 +8,7 @@ import imutils
 
 from alive_progress import alive_bar
 
-from genspa.constants import IMG_DIR, OUT_DIR
+from genspa.constants import IMG_DIR, OUT_DIR, SCREEN_RES
 from genspa.model.chromosome import Chromosome
 from genspa.model.component import Component
 from genspa.model.genetic_spa import GeneticAlgorithmSPA
@@ -77,6 +77,14 @@ def main():
             for i in range(totalEpochs):
                 logger.info(f"EPOCH {i}/{ga.get('EPOCHS')}")
                 done, img= algo.epoch(render=True, last=i == (totalEpochs-1) )
+
+                color = (0, 0, 0)
+                thickness = int(7*SCREEN_RES*web.scale)
+                font = cv2.FONT_HERSHEY_SIMPLEX
+                fontScale = max(int(2.0*SCREEN_RES*web.scale), 1)
+                org = (int(25*SCREEN_RES), int(25*SCREEN_RES))
+                img = cv2.putText(img, str(i), org, font, fontScale, color, thickness, cv2.LINE_AA)
+
                 images.append(img)
                 #if i % infor_every == 0:
                 #algo.render(wait_seconds=2)

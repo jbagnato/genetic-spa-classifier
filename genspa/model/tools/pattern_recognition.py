@@ -341,7 +341,7 @@ def detectAbout(cv_image, scale=1.0, min_len=30, min_boxes=4, min_intros=1, min_
 
         if text and type(text) == str and len(text)>4 and h>(50*SCREEN_RES*scale) and number_of_intros > min_intros:
             cv2.drawContours(cv_image, cnt, 0, (0, 0, 0), 5)
-            accum_text += " " + text
+            accum_text += " " + text.strip()
             qty += 1
 
             if qty >= min_boxes and len(accum_text) > min_len:

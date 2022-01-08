@@ -56,11 +56,9 @@ class Genome:
 
     def testGenome(self, chromos, scale):
         headers = [x for x in chromos if x.component == Component.HEADER]
-        if len(headers)>1:
+        if len(headers) > 1:
             return False
-
-        badHeaders = [x for x in chromos if x.component == Component.HEADER and x.height>(350*SCREEN_RES)]
-        if len(badHeaders)>1:
+        if len(headers)==1 and headers[0].height>(350*SCREEN_RES):
             return False
 
         footer = [x for x in chromos if x.component == Component.FOOTER]
@@ -88,7 +86,7 @@ class Genome:
             return False
 
         badBanner = [x for x in chromos if x.component == Component.BANNER and x.height > (225*SCREEN_RES*scale)]
-        if len(badBanner)>0:
+        if len(badBanner) > 0:
             return False
 
         bad_big_pic = [x for x in chromos if (x.component == Component.BIG_IMAGE) and (x.height < (200*SCREEN_RES*scale))]
@@ -96,11 +94,11 @@ class Genome:
             return False
 
         about = [x for x in chromos if x.component == Component.ABOUT]
-        if len(about)>2:
+        if len(about) > 2:
             return False
 
         blank = [x for x in chromos if x.component == Component.BIG_BUTTONS]
-        if len(blank)>4:
+        if len(blank) > 4:
             return False
 
         return True

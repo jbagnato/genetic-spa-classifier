@@ -34,44 +34,50 @@ class GeneticAlgorithmSPA:
 
 
     def mutate(self, genoma:Genome):
-        for i, chromo in enumerate(genoma.components):
-            if random.randint(0,100)/100 < self.mutation_rate:
-                #self.logger.info("Mutation")
-                #flip the bit!
+        valid = False
+        retries = 0
+        while (not valid) and retries < (10*self.components_length):
+            newGeoma = copy.deepcopy(genoma.components)
+            for i, chromo in enumerate(newGeoma):
+                if random.randint(0,100)/100 < self.mutation_rate:
+                    #self.logger.info("Mutation")
+                    #flip the bit!
 
-                #randomOffset = random.randint(0, int(self.webpage.height / 100))
-                randomIncrement = random.randint(0, int(self.webpage.height / self.components_length))
+                    #randomOffset = random.randint(0, int(self.webpage.height / 100))
+                    randomIncrement = random.randint(0, int(self.webpage.height / self.components_length))
 
-                """randomOperation = random.randint(0,100)
-                if (randomOperation>50):
-                    randomOffset = -1*randomOffset
-                    if chromo.top + randomOffset <= 0:
-                        randomOffset = 0"""
+                    randomOperation = random.randint(0,100)
+                    if (randomOperation>50):
+                        randomIncrement = -1*randomIncrement
+                        if chromo.height + randomIncrement <= 0:
+                            randomIncrement = 0
 
-                randomOperation = random.randint(0,100)
-                if (randomOperation>50):
-                    randomIncrement = -1*randomIncrement
-                    if chromo.height + randomIncrement<=100:
-                        randomIncrement = 0
+                    newchromo = Chromosome(random.choice(list(Component)),
+                                           top=chromo.top, #+ randomOffset,
+                                           height_px=chromo.height + randomIncrement,
+                                           position=chromo.position,
+                                           prev_chromo=chromo.prev_chromo,
+                                           next_chromo=chromo.next_chromo)
 
-                newchromo = Chromosome(random.choice(list(Component)),
-                                       top=chromo.top, #+ randomOffset,
-                                       height_px=chromo.height + randomIncrement,
-                                       position=chromo.position,
-                                       prev_chromo=chromo.prev_chromo,
-                                       next_chromo=chromo.next_chromo)
+                    # adjust the next chromos top and height position
+                    nchrom = chromo.next_chromo
+                    if nchrom:
+                        prevtop = nchrom.top
+                        nchrom.top = chromo.top + chromo.height + randomIncrement
+                        if nchrom.top >= prevtop:
+                            nchrom.height = nchrom.height - (nchrom.top - prevtop)
+                        else:
+                            nchrom.height = nchrom.height + (prevtop -nchrom.top)
+                        nchrom.score=-1
 
-                # adjust the next chromos top and height position
-                nchrom = chromo.next_chromo
-                if nchrom:
-                    prevtop = nchrom.top
-                    nchrom.top = chromo.top + chromo.height + randomIncrement
-                    if nchrom.top >= prevtop:
-                        nchrom.height = nchrom.height - (nchrom.top - prevtop)
-                    else:
-                        nchrom.height = nchrom.height + (prevtop -nchrom.top)
+                newGeoma[i] = newchromo
+            valid = genoma.testGenome(newGeoma, self.webpage.scale)
+            retries += 1
 
-                genoma.components[i] = newchromo
+        if not valid:
+            self.logger.warning("Mutatiion: not valid Genoma")
+
+        genoma.components = genoma.fusion(newGeoma)
 
     def crossover(self, mum:Genome, dad:Genome) -> (Genome, Genome):
         if random.randint(0,100)/100 > self.crossover_rate or mum == dad:
@@ -125,6 +131,9 @@ class GeneticAlgorithmSPA:
                     prevChromo2 = chromo2
             valid = baby1.testGenome(comps1, self.webpage.scale) and baby2.testGenome(comps2, self.webpage.scale)
             retries += 1
+
+        if not valid:
+            self.logger.warning("Crossover: not valid Genoma")
 
         baby1.components = baby1.fusion(comps1)
         baby2.components = baby2.fusion(comps2)

@@ -3,11 +3,12 @@
     "CROSSOVER_RATE": 0.7,
     "MUTATION_RATE": 0.02,
     "DOC_MUTATION_RATE": 0.001,
-    "POP_SIZE": 10,
-    "CHROMO_LENGTH": 9,
-    "EPOCHS": 22,
-    "scale": 0.06
+    "POP_SIZE": 300,
+    "CHROMO_LENGTH": 8,
+    "EPOCHS": 30,
+    "scale": 0.45
   },
+
   "sites": ["https://afallonmon.com",
     "https://gotcha.dk",
     "https://www.banyaksurfadventure.com",

@@ -77,31 +77,32 @@ class Genome:
         headers = [x for x in chromos if x.component == Component.HEADER]
         if len(headers) > 1:
             return False
-        if len(headers)==1 and headers[0].height>(350*SCREEN_RES*scale):
+
+        if len(headers) == 1 and headers[0].height>(350*SCREEN_RES*scale):
             return False
 
         footer = [x for x in chromos if x.component == Component.FOOTER]
-        if len(footer)>1:
+        if len(footer) > 1:
             return False
 
         gal = [x for x in chromos if x.component == Component.IMAGE_GALLERY]
-        if len(gal)>2:
+        if len(gal) > 2:
             return False
 
         vid = [x for x in chromos if x.component == Component.VIDEO]
-        if len(vid)>1:
+        if len(vid) > 1:
             return False
 
         form = [x for x in chromos if x.component == Component.FORM]
-        if len(form)>1:
+        if len(form) > 1:
             return False
 
         review = [x for x in chromos if x.component == Component.REVIEW]
-        if len(review)>1:
+        if len(review) > 1:
             return False
 
         banner = [x for x in chromos if x.component == Component.BANNER]
-        if len(banner)>2:
+        if len(banner) > 2:
             return False
 
         badBanner = [x for x in chromos if x.component == Component.BANNER and x.height > (225*SCREEN_RES*scale)]
@@ -131,8 +132,8 @@ class Genome:
 
         return self
 
-    def fusion(self, chromos):
-        to_delete=[]
+    def fusion(self, chromos, reposition=False):
+        to_delete = []
         for i, chromo in enumerate(chromos):
             if chromo.next_chromo and chromo.next_chromo.component == chromo.component:
                 to_delete.append(i)
@@ -142,17 +143,18 @@ class Genome:
                 chromo.score = -1  # reset score
 
         chromos = [x for i, x in enumerate(chromos) if i not in to_delete]
-        # complete with blank blocks at the end
-        for i in range(len(to_delete)):
-            chromo = Chromosome(Component.BLANK,
+
+        if reposition:
+            # complete with blank blocks at the end
+            for i in range(len(to_delete)):
+                chromo = Chromosome(Component.BLANK,
                                 top=self.screen_height,
                                 height_px=100,
                                 position= self.max_components - i,
                                 prev_chromo=None,
                                 next_chromo=None
                                 )
-
-            chromos.append(chromo)
+                chromos.append(chromo)
 
         return chromos
 

@@ -33,7 +33,7 @@ class Chromosome(dict):
         ih = site_image.shape[0]
         iw = site_image.shape[1]
 
-        top_anchor = self.top  #int(ih - self.top)
+        top_anchor = int(self.top)  #int(ih - self.top)
         if top_anchor < 0:
             return 0.0
 
@@ -41,7 +41,11 @@ class Chromosome(dict):
         if bottom_anchor > ih:
             bottom_anchor = ih
 
-        cropped = site_image[top_anchor:bottom_anchor, 0:int(iw)]
+        try:
+            cropped = site_image[top_anchor:bottom_anchor, 0:int(iw)]
+        except:
+            print("ERROR:",top_anchor,bottom_anchor, int(iw))
+            return 0.0
 
         if self.score > 0.0:
             return self.score

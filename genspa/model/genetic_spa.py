@@ -78,7 +78,7 @@ class GeneticAlgorithmSPA:
             retries += 1
 
         if not valid:
-            self.logger.warning("Mutation: not valid Genoma")
+            self.logger.warning("Mutation: not valid Genome")
 
         genoma.components = genoma.fusion(newGeoma)
 
@@ -89,8 +89,8 @@ class GeneticAlgorithmSPA:
         #self.logger.info("Crossover")
         cut = random.randint(1, min(len(mum.components), len(dad.components))-1)#self.components_length-1)
 
-        baby1 = Genome(self.components_length, self.webpage.height, self.webpage.scale,skip_generation=True)
-        baby2 = Genome(self.components_length, self.webpage.height, self.webpage.scale,skip_generation=True)
+        baby1 = Genome(self.components_length, self.webpage.height, self.webpage.scale, skip_generation=True)
+        baby2 = Genome(self.components_length, self.webpage.height, self.webpage.scale, skip_generation=True)
 
         valid = False
         retries = 0
@@ -136,7 +136,7 @@ class GeneticAlgorithmSPA:
             retries += 1
 
         if not valid:
-            self.logger.warning("Crossover: not valid Genoma")
+            self.logger.warning("Crossover: not valid Genome")
 
         baby1.components = baby1.fusion(comps1)
         baby2.components = baby2.fusion(comps2)

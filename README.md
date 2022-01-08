@@ -50,6 +50,7 @@ genspa train config/genspa.json wandure.png
 * new ways of cross in 2 point
 * fix some components overlap
 * try diverse mutation, ex. only size, only component
+* generate valid chromosome problem over time
 
 ## DONE
 

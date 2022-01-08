@@ -16,29 +16,47 @@ class Genome:
         self.max_components = max_components
         valid = False
         if not skip_generation:
-            while not valid:
+            retries=0
+            while not valid:# and retries < 20:
                 generated = self.generateRandomGenoma(height_px, max_components)
                 if self.testGenome(generated, scale):
                     self.components = self.fusion(generated)
                     valid = True
+                else:
+                    print("Invalid Genoma")
+                retries+=1
 
     def generateRandomGenoma(self, height_px, max_components) -> list:
         prev_chromo = None
         prevTop=0
         components = list()
         base_size = max(int(height_px / max_components), int(175*SCREEN_RES*self.scale))
+        used=[]
         for i in range(max_components):
             randomIncrement = random.randint(0, base_size)
             top = prevTop  # (int(height_px/max_components)*i)
             height = int(base_size / 2) + randomIncrement
             prevTop = top + height
-            chromo = Chromosome(random.choice(list(Component)),
+            if i==0:
+                kind = Component.HEADER
+            elif i == (max_components - 1):
+                kind = Component.FOOTER
+            else:
+                kind = random.choice(list(Component))
+                while kind == Component.HEADER or kind == Component.FOOTER:
+                    kind = random.choice(list(Component))
+
+            if self.more_than(used, kind, 2):
+                kind = Component.BLANK
+
+            chromo = Chromosome(kind,
                                 top=top,
                                 height_px=height,
                                 position=i,
                                 prev_chromo=prev_chromo,
                                 next_chromo=None
                                 )
+            used.append(kind)
             components.append(chromo)
             if prev_chromo:
                 prev_chromo.next_chromo = chromo
@@ -136,3 +154,10 @@ class Genome:
             chromos.append(chromo)
 
         return chromos
+
+    def more_than(self, used, kind, qty):
+        review = [x for x in used if x == kind]
+        if len(review) > (qty-1):
+            return True
+
+        return False

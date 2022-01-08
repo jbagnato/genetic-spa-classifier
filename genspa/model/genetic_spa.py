@@ -70,7 +70,7 @@ class GeneticAlgorithmSPA:
                             nchrom.height = nchrom.height + (prevtop -nchrom.top)
                         nchrom.score=-1
 
-                newGeoma[i] = newchromo
+                    newGeoma[i] = newchromo
             valid = genoma.testGenome(newGeoma, self.webpage.scale)
             retries += 1
 

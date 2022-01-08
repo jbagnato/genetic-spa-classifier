@@ -382,10 +382,10 @@ def detectBlank(cv_image, scale=1.0):
         if len(approx) > 4:
             return 0.0
 
-        if qty > 6:
+        if qty > 5:
             return 0.0
 
-    return 6.0
+    return 4.0
 
 
 def detect_form(cv_image, scale=1.0):

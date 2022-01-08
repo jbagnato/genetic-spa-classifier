@@ -33,7 +33,7 @@ class GeneticAlgorithmSPA:
         self.logger = getLogger()
 
 
-    def mutate(self, genoma:Genome):
+    def mutate(self, genoma:Genome, changeKind=True):
         valid = False
         retries = 0
         while (not valid) and retries < (10*self.components_length):
@@ -51,9 +51,12 @@ class GeneticAlgorithmSPA:
                         randomIncrement = -1*randomIncrement
                         if chromo.height + randomIncrement <= 0:
                             randomIncrement = 0
-
-                    newchromo = Chromosome(random.choice(list(Component)),
-                                           top=chromo.top, #+ randomOffset,
+                    if changeKind:
+                        kind = random.choice(list(Component))
+                    else:
+                        kind = chromo.component
+                    newchromo = Chromosome(kind,
+                                           top=chromo.top,
                                            height_px=chromo.height + randomIncrement,
                                            position=chromo.position,
                                            prev_chromo=chromo.prev_chromo,
@@ -75,7 +78,7 @@ class GeneticAlgorithmSPA:
             retries += 1
 
         if not valid:
-            self.logger.warning("Mutatiion: not valid Genoma")
+            self.logger.warning("Mutation: not valid Genoma")
 
         genoma.components = genoma.fusion(newGeoma)
 
@@ -193,8 +196,8 @@ class GeneticAlgorithmSPA:
             mum = self.roulette_wheel_selection()
             dad = self.roulette_wheel_selection()
             baby1, baby2 = self.crossover(mum, dad)
-            self.mutate(baby1)
-            self.mutate(baby2)
+            self.mutate(baby1, changeKind=False)
+            self.mutate(baby2, changeKind=False)
             baby_genomes.append(baby1)
             baby_genomes.append(baby2)
 

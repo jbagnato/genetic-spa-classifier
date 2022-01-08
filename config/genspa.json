@@ -1,7 +1,7 @@
 {
   "ga": {
     "CROSSOVER_RATE": 0.7,
-    "MUTATION_RATE": 0.02,
+    "MUTATION_RATE": 0.002,
     "DOC_MUTATION_RATE": 0.001,
     "POP_SIZE": 200,
     "CHROMO_LENGTH": 15,

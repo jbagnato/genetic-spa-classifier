@@ -95,7 +95,7 @@ class Chromosome(dict):
             return findIconInImage(p_list, image)
         elif self.component == Component.REVIEW:
             p_list = ["rating01_icon.jpg", "rating02_icon.jpg","rating03_icon.jpg", "rating04_icon.jpg", "rating05_icon.jpg"]
-            return findIconInImage(p_list, image)
+            return findIconInImage(p_list, image,anchorThreshold=6600000)
         elif self.component == Component.HEADER:
             p_list = ["menu_icon.jpg","cart_icon.jpg", "bag_icon.jpg"]
             res = findIconInImage(p_list, image)

@@ -10,6 +10,21 @@ class Genome:
 
     def __init__(self, max_components=10, height_px=2048*SCREEN_RES, scale=1, skip_generation=False):
         self.components = list()
+        self.transitions = {
+            Component.BLANK : Component.BANNER,
+            Component.BANNER : Component.BIG_IMAGE,
+            Component.BIG_IMAGE: Component.BIG_BUTTONS,
+            Component.BIG_BUTTONS: Component.BIG_TITLE,
+            Component.BIG_TITLE: Component.ABOUT,
+            Component.ABOUT: Component.FORM,
+            Component.FORM: Component.IMAGE_GALLERY,
+            Component.IMAGE_GALLERY: Component.PRODUCT_FEATURES,
+            Component.PRODUCT_FEATURES: Component.REVIEW,
+            Component.REVIEW: Component.TEXT_PARAGRAPH,
+            Component.TEXT_PARAGRAPH: Component.VIDEO,
+            Component.VIDEO: Component.BLANK
+        }
+
         self.fitness = 0.0
         self.scale = scale
         self.screen_height = height_px
@@ -17,31 +32,32 @@ class Genome:
         valid = False
         if not skip_generation:
             retries=0
-            while not valid:# and retries < 20:
+            while not valid and retries < 5000:
                 generated = self.generateRandomGenoma(height_px, max_components)
                 if self.testGenome(generated, scale):
-                    self.components = self.fusion(generated)
+                    self.components = generated  #self.fusion(generated)
                     valid = True
-                else:
-                    print("Invalid Genoma")
                 retries+=1
+            if not valid:
+                print("Invalid Genoma")
+                self.components = generated
 
     def generateRandomGenoma(self, height_px, max_components) -> list:
         prev_chromo = None
         prevTop=0
         components = list()
-        base_size = max(int(height_px / max_components), int(175*SCREEN_RES*self.scale))
+        base_size = max(int(height_px / max_components), int(200*SCREEN_RES*self.scale))
         used=[]
         for i in range(max_components):
-            randomIncrement = random.randint(0, base_size)
+            randomIncrement = random.randint(0, max(int(300*SCREEN_RES*self.scale),base_size))
             top = prevTop  # (int(height_px/max_components)*i)
             height = int(base_size / 2) + randomIncrement
-            prevTop = top + height
             if i == 0:
                 kind = Component.HEADER
-                height = max(height, 300*SCREEN_RES*self.scale)
+                height = min(height, int(300*SCREEN_RES*self.scale))
             elif i == (max_components - 1):
                 kind = Component.FOOTER
+                height = min(height, int(300*SCREEN_RES*self.scale))
             else:
                 kind = random.choice(list(Component))
                 while kind == Component.HEADER or kind == Component.FOOTER:
@@ -49,6 +65,14 @@ class Genome:
 
             if self.more_than(used, kind, 2):
                 kind = Component.BLANK
+
+            if kind == Component.BANNER:
+                height = min(height, int(225*SCREEN_RES*self.scale))
+
+            if kind == Component.BIG_IMAGE:
+                height = max(height, int(200*SCREEN_RES*self.scale))
+
+            prevTop += height
 
             chromo = Chromosome(kind,
                                 top=top,
@@ -105,7 +129,7 @@ class Genome:
         if len(banner) > 2:
             return False
 
-        badBanner = [x for x in chromos if x.component == Component.BANNER and x.height > (225*SCREEN_RES*scale)]
+        badBanner = [x for x in chromos if x.component == Component.BANNER and x.height > (250*SCREEN_RES*scale)]
         if len(badBanner) > 0:
             return False
 
@@ -134,6 +158,7 @@ class Genome:
 
     def fusion(self, chromos, reposition=False):
         to_delete = []
+
         for i, chromo in enumerate(chromos):
             if chromo.next_chromo and chromo.next_chromo.component == chromo.component:
                 to_delete.append(i)
@@ -159,8 +184,21 @@ class Genome:
         return chromos
 
     def more_than(self, used, kind, qty):
-        review = [x for x in used if x == kind]
+        review = [x for x in used if x == kind] #and kind != Component.BLANK]
         if len(review) > (qty-1):
             return True
 
         return False
+
+    def changeZeroKind(self, change=1):
+        """change in a predefined order the zero values to try to get value"""
+
+        detected=0
+        for chromo in self.components:
+            if chromo.score == 0:
+                chromo.component = self.transitions[chromo.component]
+                chromo.score = -1
+                detected +=1
+
+            if detected>=change:
+                break

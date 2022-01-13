@@ -8,7 +8,7 @@ import imutils
 
 from alive_progress import alive_bar
 
-from genspa.constants import IMG_DIR, OUT_DIR, SCREEN_RES
+from genspa.constants import IMG_DIR, OUT_DIR, SCREEN_RES, EARLY_STOP
 from genspa.model.chromosome import Chromosome
 from genspa.model.component import Component
 from genspa.model.genetic_spa import GeneticAlgorithmSPA
@@ -60,7 +60,8 @@ def main():
             logger.error("Can not open Json file")
 
         infor_every = ga.get("EPOCHS") / 25
-
+        TOP_BEST_TO_ADD = ga.get("TOP_BEST_TO_ADD")
+        NUM_BEST_TO_ADD = ga.get("NUM_BEST_TO_ADD")
 
         webimage = cv2.imread(IMG_DIR + args.image)
         if webimage is None:
@@ -70,9 +71,11 @@ def main():
 
         logger.info(f"IMAGE readed: {web.width}px x {web.height}px")
 
-        algo = GeneticAlgorithmSPA(web, ga.get("POP_SIZE"), ga.get("CROSSOVER_RATE"), ga.get("MUTATION_RATE"), ga.get("CHROMO_LENGTH"))
+        algo = GeneticAlgorithmSPA(web, ga.get("POP_SIZE"), ga.get("CROSSOVER_RATE"), ga.get("MUTATION_RATE"), ga.get("CHROMO_LENGTH"),TOP_BEST_TO_ADD,NUM_BEST_TO_ADD)
         totalEpochs = ga.get("EPOCHS")
         images = []
+        best_score=0.0
+        same=0
         with alive_bar(totalEpochs, title='PROCESSING') as bar:
             for i in range(totalEpochs):
                 logger.info(f"EPOCH {i}/{ga.get('EPOCHS')}")
@@ -90,6 +93,16 @@ def main():
                 #algo.render(wait_seconds=2)
                 logger.debug(f"GENERATION SCORE: {algo.total_fitness_score}")
                 logger.debug(f"FITTEST GENOMA: {algo.best_fitness_score}")
+
+                if algo.best_fitness_score> best_score:
+                    same=0
+                else:
+                    same +=1
+
+                if same >= EARLY_STOP:
+                    logger.info("EARLY STOP")
+                    done = True
+
                 bar()
                 if done:
                     break
@@ -97,7 +110,7 @@ def main():
         logger.info(f"BEST GENOMA SCORE: {algo.best_fitness_score}")
         bestgen = algo.get_best_genoma()
         for chome in bestgen.components:
-            logger.info(f"-- {chome.component.name}: {chome.score}")
+            logger.info(f"-- {chome.component.name}: {chome.score} - ({chome.top},{chome.height})")
 
         algo.render(save=True)
         algo.render(save=True, skip_no_score=True, filename=f"{OUT_DIR}output-{args.image}")

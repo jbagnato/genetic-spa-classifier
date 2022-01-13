@@ -35,6 +35,7 @@ class Chromosome(dict):
 
         top_anchor = int(self.top)  #int(ih - self.top)
         if top_anchor < 0:
+            self.score = 0.0
             return 0.0
 
         bottom_anchor = int(top_anchor + self.height)
@@ -47,7 +48,7 @@ class Chromosome(dict):
             print("ERROR:",top_anchor,bottom_anchor, int(iw))
             return 0.0
 
-        if self.score > 0.0:
+        if self.score >= 0.0:
             return self.score
 
         #self.logger.debug(f"scoreComponent {self.component.name}")

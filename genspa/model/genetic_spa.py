@@ -4,7 +4,7 @@ import concurrent.futures
 
 from alive_progress import alive_bar
 
-from genspa.constants import NUM_BEST_TO_ADD, TOP_BEST_TO_ADD, N_JOBS, MAX_SCORE_STOP
+from genspa.constants import N_JOBS, MAX_SCORE_STOP, INVALID_GENOMA_RETRIES, SCREEN_RES
 from genspa.model.chromosome import Chromosome
 from genspa.model.component import Component
 from genspa.model.genome import Genome
@@ -17,7 +17,7 @@ from genspa.util.logger_utils import getLogger
 
 class GeneticAlgorithmSPA:
 
-    def __init__(self, webpage:Webpage, pop_size:int, cross_rate:float, muta_rate:float, components_length:int=10):
+    def __init__(self, webpage:Webpage, pop_size:int, cross_rate:float, muta_rate:float, components_length:int=10,TOP_BEST_TO_ADD=3, NUM_BEST_TO_ADD=2):
         self.genomas = list()
         self.population_size = pop_size
         self.crossover_rate = cross_rate
@@ -31,20 +31,22 @@ class GeneticAlgorithmSPA:
         self.memory = list()  # to see how is the evolution over generations
         self.create_start_popualtion()
         self.logger = getLogger()
+        self.TOP_BEST_TO_ADD=TOP_BEST_TO_ADD
+        self.NUM_BEST_TO_ADD=NUM_BEST_TO_ADD
 
 
     def mutate(self, genoma:Genome, changeKind=True):
         valid = False
         retries = 0
-        while (not valid) and retries < (self.components_length):
+        while (not valid) and retries < INVALID_GENOMA_RETRIES:#(self.components_length):
             newGeoma = copy.deepcopy(genoma.components)
             for i, chromo in enumerate(newGeoma):
-                if random.randint(0,100)/100 < self.mutation_rate:
+                if (random.randint(0,1000)/1000) < self.mutation_rate:
                     #self.logger.info("Mutation")
                     #flip the bit!
 
                     #randomOffset = random.randint(0, int(self.webpage.height / 100))
-                    randomIncrement = random.randint(0, int(self.webpage.height / self.components_length))
+                    randomIncrement = random.randint(0, max(int(200*SCREEN_RES*self.webpage.scale), int(self.webpage.height / self.components_length)))
 
                     randomOperation = random.randint(0,100)
                     if (randomOperation>50):
@@ -57,7 +59,7 @@ class GeneticAlgorithmSPA:
                         kind = chromo.component
                     newchromo = Chromosome(kind,
                                            top=chromo.top,
-                                           height_px=chromo.height + randomIncrement,
+                                           height_px=int(chromo.height + randomIncrement),
                                            position=chromo.position,
                                            prev_chromo=chromo.prev_chromo,
                                            next_chromo=chromo.next_chromo)
@@ -66,24 +68,25 @@ class GeneticAlgorithmSPA:
                     nchrom = chromo.next_chromo
                     if nchrom:
                         prevtop = nchrom.top
-                        nchrom.top = chromo.top + chromo.height + randomIncrement
+                        nchrom.top = chromo.top + int(chromo.height + randomIncrement)
                         if nchrom.top >= prevtop:
                             nchrom.height = nchrom.height - (nchrom.top - prevtop)
                         else:
-                            nchrom.height = nchrom.height + (prevtop -nchrom.top)
+                            nchrom.height = nchrom.height + (prevtop - nchrom.top)
                         nchrom.score=-1
 
                     newGeoma[i] = newchromo
+
             valid = genoma.testGenome(newGeoma, self.webpage.scale)
             retries += 1
 
         if not valid:
             self.logger.warning("Mutation: not valid Genome")
 
-        genoma.components = genoma.fusion(newGeoma)
+        genoma.components = newGeoma #genoma.fusion(newGeoma)
 
     def crossover(self, mum:Genome, dad:Genome) -> (Genome, Genome):
-        if random.randint(0,100)/100 > self.crossover_rate or mum == dad:
+        if ((random.randint(0,100)/100) > self.crossover_rate) or mum == dad:
             return mum, dad
 
         #self.logger.info("Crossover")
@@ -94,9 +97,11 @@ class GeneticAlgorithmSPA:
 
         valid = False
         retries = 0
-        while (not valid) and retries < (self.components_length):
+        while (not valid) and retries < INVALID_GENOMA_RETRIES:#(self.components_length):
             comps1=list()
+            used = []
             comps2=list()
+            used2 = []
             lastTop1 = 0
             lastTop2 = 0
             prevChromo1=None
@@ -104,42 +109,74 @@ class GeneticAlgorithmSPA:
             for i in range(min(len(mum.components), len(dad.components))):#self.components_length):
                 if i < cut:
                     chromo1 = copy.deepcopy(mum.components[i])
+                    #if chromo1.score == 0:
+                    #    chromo1.component = mum.transitions[chromo1.component]
+                    used.append(chromo1.component)
+
                     comps1.append(chromo1)
-                    lastTop1 = chromo1.top + chromo1.height
+
+                    lastTop1 += chromo1.height
                     prevChromo1 = chromo1
+
                     chromo2 = copy.deepcopy(dad.components[i])
+                    #if chromo2.score == 0:
+                    #    chromo2.component = dad.transitions[chromo2.component]
+                    used2.append(chromo2.component)
+
                     comps2.append(chromo2)
+
                     prevChromo2 = chromo2
-                    lastTop2 = chromo2.top + chromo2.height
+                    lastTop2 += chromo2.height
                 else:
                     # need to update the prev and next chromosomas
                     # also have to adjust top and recalculate score
                     chromo1 = copy.deepcopy(dad.components[i])
+                    #if chromo1.score == 0:
+                    #    chromo1.component = mum.transitions[chromo1.component]
+
                     chromo1.top = lastTop1
-                    lastTop1 = chromo1.top + chromo1.height
+                    lastTop1 += chromo1.height
+
                     chromo1.score=-1  # reset score because the offset
                     if prevChromo1:
                         prevChromo1.next_chromo=chromo1
                     chromo1.prev_chromo = prevChromo1
+
+                    #if mum.more_than(used, chromo1.component, 2):
+                    #    chromo1.component = Component.BLANK
+                    #else:
+                    #    used.append(chromo1.component)
+
                     comps1.append(chromo1)
                     prevChromo1 = chromo1
+
                     chromo2 = copy.deepcopy(mum.components[i])
+                    #if chromo2.score == 0:
+                    #    chromo2.component = dad.transitions[chromo2.component]
+
                     chromo2.top = lastTop2
-                    lastTop2 = chromo2.top + chromo2.height
+                    lastTop2 += chromo2.height
                     chromo2.score=-1  # reset score because the offset
                     if prevChromo2:
                         prevChromo2.next_chromo=chromo2
                     chromo2.prev_chromo = prevChromo2
+
+                    #if dad.more_than(used2, chromo2.component, 2):
+                    #    chromo2.component = Component.BLANK
+                    #else:
+                    #    used2.append(chromo2.component)
+
                     comps2.append(chromo2)
                     prevChromo2 = chromo2
+
             valid = baby1.testGenome(comps1, self.webpage.scale) and baby2.testGenome(comps2, self.webpage.scale)
             retries += 1
 
         if not valid:
             self.logger.warning("Crossover: not valid Genome")
 
-        baby1.components = baby1.fusion(comps1)
-        baby2.components = baby2.fusion(comps2)
+        baby1.components = comps1 #baby1.fusion(comps1)
+        baby2.components = comps2 #baby2.fusion(comps2)
 
         return baby1, baby2
 
@@ -178,26 +215,33 @@ class GeneticAlgorithmSPA:
         img = None
         if render:
             img = self.render(2)
+            bestgen = self.get_best_genoma()
+            for chome in bestgen.components:
+                self.logger.info(f"-- {chome.component.name}: {chome.score} - ({chome.top},{chome.height}) - {chome.top + chome.height}")
 
         if self.best_fitness_score >= (MAX_SCORE_STOP * self.components_length) or last:
             # we found best posible solution
             return True, img
 
+        self.logger.info("GENERATING NEW POPULATION")
         baby_genomes = list()
 
         # To return a new list, use the sorted() built-in function...
         orderedlist = sorted(self.genomas, key=lambda x: x.fitness, reverse=True)
-        for i in range(TOP_BEST_TO_ADD):
-            for j in range(NUM_BEST_TO_ADD):
-                baby_genomes.append(copy.deepcopy(orderedlist[i]).copy())
+        for i in range(self.TOP_BEST_TO_ADD):
+            for j in range(self.NUM_BEST_TO_ADD):
+                sample = copy.deepcopy(orderedlist[i]).copy()
+                sample.changeZeroKind()
+                baby_genomes.append(sample)
 
-        self.logger.info("GENERATING NEW POPULATION")
         while len(baby_genomes) < self.population_size:
             mum = self.roulette_wheel_selection()
             dad = self.roulette_wheel_selection()
             baby1, baby2 = self.crossover(mum, dad)
             self.mutate(baby1, changeKind=False)
             self.mutate(baby2, changeKind=False)
+            baby1.changeZeroKind()
+            baby2.changeZeroKind()
             baby_genomes.append(baby1)
             baby_genomes.append(baby2)
 

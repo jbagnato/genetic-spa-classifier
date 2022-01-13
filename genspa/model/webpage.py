@@ -1,11 +1,12 @@
 import random
 import joblib as jl
+import concurrent.futures
 
 import cv2
 import imutils
 from alive_progress import alive_bar
 
-from genspa.constants import SCREEN_RES
+from genspa.constants import SCREEN_RES, N_JOBS
 from genspa.model.genome import Genome
 
 
@@ -36,6 +37,11 @@ class Webpage:
             if bar and c_score > 0.0:
                 bar.text(f"{chromo.component.name} : {c_score}")
 
+        """
+        with concurrent.futures.ThreadPoolExecutor(max_workers=int(N_JOBS)) as executor:
+            c_score = [executor.submit(chromo.fitness, self.site_image.copy(), self.scale) for chromo in path.components]
+            score=sum([x.result() for x in c_score])
+        """
         path.set_fitness(score)
         #bar()
         return score
@@ -65,7 +71,11 @@ class Webpage:
             if not skip_similar:
                 color = chromo.color #(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
                 thickness = int(7*SCREEN_RES*self.scale)
-                cv2.rectangle(image, (0+thickness, top_anchor+thickness), (self.width-thickness, bottom_anchor-thickness), color, thickness)
+                try:
+                    cv2.rectangle(image, (0+thickness, int(top_anchor+thickness)), (self.width-thickness, int(bottom_anchor-thickness)), color, thickness)
+                except Exception as ex:
+                    print("ERROR", ex,(0+thickness, int(top_anchor+thickness)), (self.width-thickness, int(bottom_anchor-thickness)))
+
                 font = cv2.FONT_HERSHEY_SIMPLEX
                 # fontScale
                 fontScale = max(int(1.5*SCREEN_RES*self.scale), 1)

@@ -28,7 +28,7 @@ def detect_big_image(cv_image, scale=1.0):
             else:
                 cv2.putText(cv_image, "rectangle", (x, y), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 0))
 
-            if w >int(500*SCREEN_RES*scale) and h>(350*SCREEN_RES*scale):
+            if w >int(380*SCREEN_RES*scale) and h>(350*SCREEN_RES*scale):
                 if DEBUG_SHOW_PATTERN_IMAGES:
                     cv2.drawContours(cv_image, [approx], 0, (0, 0, 0), 5)
                     cv2.imshow('shapes', cv_image)
@@ -43,7 +43,6 @@ def detect_image_gallery(cv_image, scale=1.0):
     imgGry = cv2.GaussianBlur(imgGry, (17, 17), 0)
     # Blur the image for better edge detection
     #imgGry = cv2.GaussianBlur(imgGry, (3, 3), sigmaX=0, sigmaY=0)
-
 
     ret , thrash = cv2.threshold(imgGry, 240 , 255, cv2.CHAIN_APPROX_NONE)
     #cv2.imshow('test', thrash)
@@ -70,7 +69,7 @@ def detect_image_gallery(cv_image, scale=1.0):
             else:
                 cv2.putText(cv_image, "rectangle", (x, y), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 0))
 
-            if (w >(150*SCREEN_RES*scale) and h>(150*SCREEN_RES*scale)) and (w < (350*SCREEN_RES*scale) and h<(350*SCREEN_RES*scale)):
+            if (w >(75*SCREEN_RES*scale) and h>(100*SCREEN_RES*scale)) and (w < (175*SCREEN_RES*scale) and h<(300*SCREEN_RES*scale)):
                 qty += 1
 
                 if qty >= 3:
@@ -79,7 +78,6 @@ def detect_image_gallery(cv_image, scale=1.0):
                         cv2.imshow('shapes', cv_image)
                         cv2.waitKey(1)
                     return 10.0
-
 
     return 0.0
 
@@ -169,7 +167,7 @@ def detect_banner(cv_image, scale=1.0):
             else:
                 cv2.putText(cv_image, "rectangle", (x, y), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 0))
 
-            if w >(850*SCREEN_RES*scale) and h<(200*SCREEN_RES*scale):
+            if w >(400*SCREEN_RES*scale) and h<(200*SCREEN_RES*scale):
                 if DEBUG_SHOW_PATTERN_IMAGES:
                     cv2.drawContours(cv_image, [approx], 0, (0, 0, 0), 5)
                     cv2.imshow('shapes', cv_image)
@@ -385,7 +383,7 @@ def detectBlank(cv_image, scale=1.0):
         if qty > 5:
             return 0.0
 
-    return 4.0
+    return 1.0
 
 
 def detect_form(cv_image, scale=1.0):

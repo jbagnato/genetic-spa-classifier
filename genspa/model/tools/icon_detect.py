@@ -7,25 +7,6 @@ import cv2
 # construct the argument parser and parse the arguments
 from genspa.constants import PATTERN_DIR, DEBUG_SHOW_PATTERN_IMAGES
 
-"""
-ap = argparse.ArgumentParser()
-ap.add_argument("-p", "--patterns", required=True, help="Path to patterns to search")
-ap.add_argument("-i", "--imagesdir", required=True, help="Path to images where template will be matched")
-ap.add_argument("-t", "--threshold", type=int, default=4000000,
-                help="Minimum threshold to match de image with pattern.")
-ap.add_argument("-v", "--visualize", help="Flag to visualize during seconds the image detected")
-args = vars(ap.parse_args())
-skip_founded = set()
-
-if args["patterns"].endswith(".jpg"):
-    searchIcons = [args["patterns"]]
-else:
-    searchIcons = glob.glob(args["patterns"] + "/*.jpg")
-
-searchImages = glob.glob(args["imagesdir"] + "/*.png")
-
-results = []
-"""
 
 # load the image image, convert it to grayscale, and detect edges
 def findIconInImage(pattern_list, image, anchorThreshold=5000000, visualize=False):
@@ -36,7 +17,7 @@ def findIconInImage(pattern_list, image, anchorThreshold=5000000, visualize=Fals
         (tH, tW) = template.shape[:2]
 
         #anchorThreshold = args.get("threshold")  # recommended 4700000
-        scaleRange = np.linspace(0.8, 1.2, 10)
+        scaleRange = np.linspace(0.8, 1.2, 9)
 
         # loop over the images to find the template in
     #    for imagePath in sorted(searchImages):

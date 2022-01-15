@@ -1,8 +1,10 @@
-# genetic-spa-classifier
+# Genetic Algorithm for Single Page Apps
 
-Genetic Algorithm implementation to classify webpage's components using site's screenshot image
+Genetic Algorithm implementation to classify webpage's components using site's screenshot image.
 
 ![Trained DNA](https://github.com/jbagnato/genetic-spa-classifier/blob/main/sample.gif)
+
+As a result you get a json file, a png image with component's area and a gif with the evolution.
 
 ## Getting Started
 
@@ -76,8 +78,12 @@ genspa train config/genspa.json wandure.png
 
 ## DONE
 
-* fix some components overlap
-* add json to results with offset and score
-* detect certain icons to increase accuracy
-* improve detection time on "about" pattern
-* add "classism" and better roulette
+* ~~fix some components overlap~~
+* ~~add json to results with offset and score~~
+* ~~detect certain icons to increase accuracy~~
+* ~~improve detection time on "about" pattern~~
+* ~~add "classism" and better roulette~~
+* ~~create detection patterns~~
+* ~~create genoma~~
+* ~~create chromosoma~~
+* ~~create components as python enum~~

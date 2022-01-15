@@ -95,9 +95,10 @@ def main():
                 logger.debug(f"FITTEST GENOMA: {algo.best_fitness_score}")
 
                 if algo.best_fitness_score> best_score:
-                    same=0
+                    best_score= algo.best_fitness_score
+                    same = 0
                 else:
-                    same +=1
+                    same += 1
 
                 if same >= EARLY_STOP:
                     logger.info("EARLY STOP")

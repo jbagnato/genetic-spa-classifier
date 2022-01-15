@@ -139,7 +139,7 @@ def detect_product_features(cv_image, scale=1.0):
                         cv2.imshow('shapes', cv_image)
                         cv2.waitKey(1)
                 # AND has to have some text
-                hasText = detectAbout(original, scale=scale, min_len=20, min_boxes=2, min_intros=1, min_box_height=20*SCREEN_RES)
+                hasText = detectAbout(original, scale=scale, min_len=20, min_boxes=2, min_intros=1, min_box_height=20*SCREEN_RES*scale)
                 if hasText>0.0:
                     return 10.0
 
@@ -322,7 +322,7 @@ def detectAbout(cv_image, scale=1.0, min_len=30, min_boxes=4, min_intros=1, min_
             continue
 
         # Drawing a rectangle on copied image
-        rect = cv2.rectangle(cv_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        #rect = cv2.rectangle(cv_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
 
         # Cropping the text block for giving input to OCR

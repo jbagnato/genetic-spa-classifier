@@ -57,7 +57,7 @@ class SPAScrap:
         width = 1024
         height = width*4
         driver.set_window_size(width, height)
-        driver.set_page_load_timeout(6)
+        driver.set_page_load_timeout(24)
 
         for i, web in enumerate(webs_to_visit):
             try:
@@ -75,8 +75,9 @@ class SPAScrap:
                 self.avoid_subscription(driver)
 
                 driver.get_screenshot_as_file(f"{directory}/{self.domain_name(web)}.png")
-            except (TimeoutException, WebDriverException):
+            except (TimeoutException, WebDriverException) as ex:
                 self.logger.error(f"Fail to do screenshots of {web}")
+                print(ex)
 
         driver.quit()
 

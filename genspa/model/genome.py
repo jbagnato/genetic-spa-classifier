@@ -190,7 +190,7 @@ class Genome:
 
         return False
 
-    def changeZeroKind(self, change=1):
+    def changeZeroKind(self, change=4):
         """change in a predefined order the zero values to try to get value"""
 
         detected=0

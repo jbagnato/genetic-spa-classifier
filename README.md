@@ -1,6 +1,29 @@
 # genetic-spa-classifier
+
 Genetic Algorithm implementation to classify webpage's components using site's screenshot image
 
+![Trained DNA](https://github.com/jbagnato/genetic-spa-classifier/blob/main/sample.gif)
+
+## Getting Started
+
+To use it:
+
+0. Set your local paths on constants.py
+
+
+1. Webscrap some sites using
+
+    ```python
+    genspa scrap
+    ```
+
+2. Train algorihm with
+
+   ```python
+   genspa train config/genspa.json drinkolipop.png
+   ```
+   
+ 
 ## Developer Environment Intallation
 
 ```
@@ -48,12 +71,12 @@ genspa train config/genspa.json wandure.png
 ## TODO:
 
 * new ways of cross in 2 point
-* fix some components overlap
 * try diverse mutation, ex. only size, only component
 * generate valid chromosome problem over time
 
 ## DONE
 
+* fix some components overlap
 * add json to results with offset and score
 * detect certain icons to increase accuracy
 * improve detection time on "about" pattern

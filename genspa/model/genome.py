@@ -32,7 +32,7 @@ class Genome:
         valid = False
         if not skip_generation:
             retries=0
-            while not valid and retries < 5000:
+            while not valid and retries < 4000:
                 generated = self.generateRandomGenoma(height_px, max_components)
                 if self.testGenome(generated, scale):
                     self.components = generated  #self.fusion(generated)
@@ -176,6 +176,8 @@ class Genome:
 
     def fusion(self, chromos, reposition=False):
         to_delete = []
+        if len(chromos)<=6:
+            return chromos
 
         for i, chromo in enumerate(chromos):
             if chromo.next_chromo and chromo.next_chromo.component == chromo.component:
@@ -183,6 +185,7 @@ class Genome:
                 chromo.height = chromo.height + chromo.next_chromo.height
                 # if there are more than 2
                 chromo.next_chromo.top = chromo.top
+                chromo.next_chromo.height = chromo.height
                 chromo.score = -1  # reset score
 
         chromos = [x for i, x in enumerate(chromos) if i not in to_delete]
@@ -208,7 +211,7 @@ class Genome:
 
         return False
 
-    def changeZeroKind(self, change=4):
+    def changeZeroKind(self, change=7):
         """change in a predefined order the zero values to try to get value"""
 
         detected=0

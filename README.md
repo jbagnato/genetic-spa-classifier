@@ -75,6 +75,7 @@ genspa train config/genspa.json wandure.png
 * new ways of cross in 2 point
 * try diverse mutation, ex. only size, only component
 * generate valid chromosome problem over time
+* diverse score on same block to tiebreak
 
 ## DONE
 

@@ -83,10 +83,13 @@ class GeneticAlgorithmSPA:
         if not valid:
             self.logger.warning("Mutation: not valid Genome")
 
-        genoma.components = new_components #genoma.fusion(newGeoma)
+        genoma.components = genoma.fusion(new_components)
 
     def crossover(self, mum:Genome, dad:Genome) -> (Genome, Genome):
-        if ((random.randint(0,100)/100) > self.crossover_rate) or mum == dad:
+
+        comps = min(len(mum.components), len(dad.components)) - 1
+
+        if ((random.randint(0, 100)/100) > self.crossover_rate) or (mum == dad) or comps <= 6:
             return mum, dad
 
         #self.logger.info("Crossover")

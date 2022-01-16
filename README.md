@@ -76,6 +76,8 @@ genspa train config/genspa.json wandure.png
 * try diverse mutation, ex. only size, only component
 * generate valid chromosome problem over time
 * diverse score on same block to tiebreak
+* new generation using only 1 list of components and shuffle
+* Then on crossover,choice two and swap, so it still valid
 
 ## DONE
 

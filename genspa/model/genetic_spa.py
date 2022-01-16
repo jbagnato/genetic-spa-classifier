@@ -81,12 +81,12 @@ class GeneticAlgorithmSPA:
         if not valid:
             self.logger.warning("Mutation: not valid Genome")
 
-        genoma.components = genoma.fusion(new_components)
+        genoma.components = new_components#genoma.fusion(new_components)
 
     def crossover(self, mum:Genome, dad:Genome) -> (Genome, Genome):
 
-        c1 = random.randint(0, min(len(mum.components), len(dad.components))-1)
-        c2 = random.randint(0, min(len(mum.components), len(dad.components))-1)
+        c1 = random.randint(1, min(len(mum.components), len(dad.components))-2)
+        c2 = random.randint(1, min(len(mum.components), len(dad.components))-2)
         cc1 = mum.components[c1].component
         cc2 = dad.components[c2].component
         if ((random.randint(0, 100)/100) > self.crossover_rate) or (mum == dad) or (cc1 == cc2):
@@ -291,8 +291,8 @@ class GeneticAlgorithmSPA:
             baby1, baby2 = self.crossover(mum, dad)
             self.mutate(baby1, changeKind=False)
             self.mutate(baby2, changeKind=False)
-            #baby1.changeZeroKind()
-            #baby2.changeZeroKind()
+            baby1.changeZeroKind()
+            baby2.changeZeroKind()
             baby_genomes.append(baby1)
             baby_genomes.append(baby2)
 

@@ -11,6 +11,8 @@ class Genome:
     def __init__(self, max_components=10, height_px=2048*SCREEN_RES, scale=1, skip_generation=False):
         self.components = list()
         self.transitions = {
+            Component.HEADER : Component.HEADER,
+            Component.FOOTER : Component.FOOTER,
             Component.BLANK : Component.BANNER,
             Component.BANNER : Component.BIG_IMAGE,
             Component.BIG_IMAGE: Component.BIG_BUTTONS,

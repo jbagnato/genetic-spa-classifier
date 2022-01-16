@@ -83,6 +83,8 @@ genspa train config/genspa.json wandure.png
 
 * ~~fix some components overlap~~
 * ~~add json to results with offset and score~~
+* ~~limit size of gif and add it to readme as an example~~
+* ~~Move some params from constants to json settings~~
 * ~~detect certain icons to increase accuracy~~
 * ~~improve detection time on "about" pattern~~
 * ~~add "classism" and better roulette~~

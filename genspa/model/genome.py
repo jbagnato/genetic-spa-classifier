@@ -11,7 +11,7 @@ class Genome:
     def __init__(self, max_components=10, height_px=2048*SCREEN_RES, scale=1, skip_generation=False):
         self.components = list()
         self.transitions = {
-            #Component.BLANK : Component.BANNER,
+            Component.BLANK : Component.BANNER,
             Component.BANNER : Component.BIG_IMAGE,
             Component.BIG_IMAGE: Component.BIG_BUTTONS,
             Component.BIG_BUTTONS: Component.BIG_TITLE,
@@ -22,7 +22,7 @@ class Genome:
             Component.PRODUCT_FEATURES: Component.REVIEW,
             Component.REVIEW: Component.TEXT_PARAGRAPH,
             Component.TEXT_PARAGRAPH: Component.VIDEO,
-            Component.VIDEO: Component.BANNER
+            Component.VIDEO: Component.BLANK
         }
 
         self.fitness = 0.0
@@ -48,6 +48,12 @@ class Genome:
         components = list()
         base_size = max(int(height_px / max_components), int(200*SCREEN_RES*self.scale))
         used=[]
+
+        aList = list(Component)
+        random.shuffle(aList)
+        aList.remove(Component.HEADER)
+        aList.remove(Component.FOOTER)
+
         for i in range(max_components):
             randomIncrement = random.randint(0, max(int(300*SCREEN_RES*self.scale),base_size))
             top = prevTop  # (int(height_px/max_components)*i)
@@ -59,9 +65,9 @@ class Genome:
                 kind = Component.FOOTER
                 height = min(height, int(300*SCREEN_RES*self.scale))
             else:
-                kind = random.choice(list(Component))
-                while kind == Component.HEADER or kind == Component.FOOTER:
-                    kind = random.choice(list(Component))
+                kind = aList[i-1] #random.choice(list(Component))
+                #while kind == Component.HEADER or kind == Component.FOOTER:
+                #    kind = random.choice(list(Component))
 
             #if self.more_than(used, kind, 2):
             #    kind = Component.BLANK
@@ -193,7 +199,7 @@ class Genome:
         if reposition:
             # complete with blank blocks at the end
             for i in range(len(to_delete)):
-                chromo = Chromosome(Component.BANNER, # BLANK
+                chromo = Chromosome(Component.BLANK,
                                 top=self.screen_height,
                                 height_px=100,
                                 position= self.max_components - i,

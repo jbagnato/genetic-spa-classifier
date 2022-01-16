@@ -71,7 +71,9 @@ def main():
 
         logger.info(f"IMAGE readed: {web.width}px x {web.height}px")
 
-        algo = GeneticAlgorithmSPA(web, ga.get("POP_SIZE"), ga.get("CROSSOVER_RATE"), ga.get("MUTATION_RATE"), ga.get("CHROMO_LENGTH"),TOP_BEST_TO_ADD,NUM_BEST_TO_ADD)
+        qty_comps = len(list(Component))  # ga.get("CHROMO_LENGTH")
+
+        algo = GeneticAlgorithmSPA(web, ga.get("POP_SIZE"), ga.get("CROSSOVER_RATE"), ga.get("MUTATION_RATE"), qty_comps,TOP_BEST_TO_ADD,NUM_BEST_TO_ADD)
         totalEpochs = ga.get("EPOCHS")
         images = []
         best_score=0.0

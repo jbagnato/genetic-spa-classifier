@@ -38,17 +38,15 @@ class GeneticAlgorithmSPA:
     def mutate(self, genoma:Genome, changeKind=True):
         valid = False
         retries = 0
-        while (not valid) and retries < INVALID_GENOMA_RETRIES:#(self.components_length):
-            new_components = genoma.clone() #copy.deepcopy(genoma.components)
+        while (not valid) and retries < INVALID_GENOMA_RETRIES:
+            new_components = genoma.clone()
             for i, chromo in enumerate(new_components):
-                if (random.randint(0,1000)/1000) < self.mutation_rate:
+                if (random.randint(0, 1000)/1000) < self.mutation_rate:
                     #self.logger.info("Mutation")
                     #flip the bit!
-
-                    #randomOffset = random.randint(0, int(self.webpage.height / 100))
                     randomIncrement = random.randint(0, max(int(200*SCREEN_RES*self.webpage.scale), int(self.webpage.height / self.components_length)))
 
-                    randomOperation = random.randint(0,100)
+                    randomOperation = random.randint(0, 100)
                     if (randomOperation>50):
                         randomIncrement = -1*randomIncrement
                         if chromo.height + randomIncrement <= 0:
@@ -73,7 +71,7 @@ class GeneticAlgorithmSPA:
                             nchrom.height = nchrom.height - (nchrom.top - prevtop)
                         else:
                             nchrom.height = nchrom.height + (prevtop - nchrom.top)
-                        nchrom.score=-1
+                        nchrom.score = -1
 
                     new_components[i] = newchromo
 
@@ -86,6 +84,66 @@ class GeneticAlgorithmSPA:
         genoma.components = genoma.fusion(new_components)
 
     def crossover(self, mum:Genome, dad:Genome) -> (Genome, Genome):
+
+        c1 = random.randint(0, min(len(mum.components), len(dad.components)))
+        c2 = random.randint(0, min(len(mum.components), len(dad.components)))
+
+        if ((random.randint(0, 100)/100) > self.crossover_rate) or (mum == dad) or (c1 == c2):
+            return mum, dad
+
+        baby1 = Genome(self.components_length, self.webpage.height, self.webpage.scale, skip_generation=True)
+        baby2 = Genome(self.components_length, self.webpage.height, self.webpage.scale, skip_generation=True)
+
+        comps1 = list()
+        comps2 = list()
+        lastTop1 = 0
+        lastTop2 = 0
+        prevChromo1=None
+        prevChromo2=None
+        for i in range(min(len(mum.components), len(dad.components))):
+            if i != c1 and i != c2:
+                chromo1 = copy.deepcopy(mum.components[i])
+                chromo1.prev_chromo = prevChromo1
+                if prevChromo1:
+                    prevChromo1.next_chromo = chromo1
+                comps1.append(chromo1)
+                lastTop1 += chromo1.height
+                prevChromo1 = chromo1
+                chromo2 = copy.deepcopy(dad.components[i])
+                chromo2.prev_chromo = prevChromo2
+                if prevChromo2:
+                    prevChromo2.next_chromo = chromo2
+                comps2.append(chromo2)
+                prevChromo2 = chromo2
+                lastTop2 += chromo2.height
+            else:
+                # need to update the prev and next chromosomas
+                # also have to adjust top and recalculate score
+                chromo1 = copy.deepcopy(dad.components[i])
+                chromo1.top = lastTop1
+                lastTop1 += chromo1.height
+                chromo1.score=-1  # reset score because the offset
+                if prevChromo1:
+                    prevChromo1.next_chromo=chromo1
+                chromo1.prev_chromo = prevChromo1
+                comps1.append(chromo1)
+                prevChromo1 = chromo1
+                chromo2 = copy.deepcopy(mum.components[i])
+                chromo2.top = lastTop2
+                lastTop2 += chromo2.height
+                chromo2.score=-1  # reset score because the offset
+                if prevChromo2:
+                    prevChromo2.next_chromo=chromo2
+                chromo2.prev_chromo = prevChromo2
+                comps2.append(chromo2)
+                prevChromo2 = chromo2
+
+        baby1.components = comps1
+        baby2.components = comps2
+
+        return baby1, baby2
+
+    def crossover0(self, mum:Genome, dad:Genome) -> (Genome, Genome):
 
         comps = min(len(mum.components), len(dad.components)) - 1
 
@@ -101,9 +159,9 @@ class GeneticAlgorithmSPA:
         valid = False
         retries = 0
         while (not valid) and retries < INVALID_GENOMA_RETRIES:#(self.components_length):
-            comps1=list()
+            comps1 = list()
             used = []
-            comps2=list()
+            comps2 = list()
             used2 = []
             lastTop1 = 0
             lastTop2 = 0
@@ -189,7 +247,7 @@ class GeneticAlgorithmSPA:
         return baby1, baby2
 
     def roulette_wheel_selection(self) -> Genome:
-        slice = random.randint(0,100)/100 * self.total_fitness_score
+        slice = random.randint(0, 100)/100 * self.total_fitness_score
         total = 0.0
         selected_genome = 0
         for i in range(self.population_size):

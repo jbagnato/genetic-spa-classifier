@@ -91,8 +91,8 @@ class Chromosome(dict):
             p_list = ["like01_icon.jpg", "like02_icon.jpg"]
             add = findIconInImage(p_list, image)
             return base + add
-        elif self.component == Component.BLANK:
-            return detectBlank(image, scale=scale)
+        #elif self.component == Component.BLANK:
+        #    return detectBlank(image, scale=scale)
         elif self.component == Component.FORM:
             return detect_form(image, scale=scale)
         elif self.component == Component.VIDEO:

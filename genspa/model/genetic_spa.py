@@ -39,8 +39,8 @@ class GeneticAlgorithmSPA:
         valid = False
         retries = 0
         while (not valid) and retries < INVALID_GENOMA_RETRIES:#(self.components_length):
-            newGeoma = copy.deepcopy(genoma.components)
-            for i, chromo in enumerate(newGeoma):
+            new_components = genoma.clone() #copy.deepcopy(genoma.components)
+            for i, chromo in enumerate(new_components):
                 if (random.randint(0,1000)/1000) < self.mutation_rate:
                     #self.logger.info("Mutation")
                     #flip the bit!
@@ -75,15 +75,15 @@ class GeneticAlgorithmSPA:
                             nchrom.height = nchrom.height + (prevtop - nchrom.top)
                         nchrom.score=-1
 
-                    newGeoma[i] = newchromo
+                    new_components[i] = newchromo
 
-            valid = genoma.testGenome(newGeoma, self.webpage.scale)
+            valid = genoma.testGenome(new_components, self.webpage.scale)
             retries += 1
 
         if not valid:
             self.logger.warning("Mutation: not valid Genome")
 
-        genoma.components = newGeoma #genoma.fusion(newGeoma)
+        genoma.components = new_components #genoma.fusion(newGeoma)
 
     def crossover(self, mum:Genome, dad:Genome) -> (Genome, Genome):
         if ((random.randint(0,100)/100) > self.crossover_rate) or mum == dad:
@@ -112,7 +112,9 @@ class GeneticAlgorithmSPA:
                     #if chromo1.score == 0:
                     #    chromo1.component = mum.transitions[chromo1.component]
                     used.append(chromo1.component)
-
+                    chromo1.prev_chromo = prevChromo1
+                    if prevChromo1:
+                        prevChromo1.next_chromo = chromo1
                     comps1.append(chromo1)
 
                     lastTop1 += chromo1.height
@@ -122,6 +124,9 @@ class GeneticAlgorithmSPA:
                     #if chromo2.score == 0:
                     #    chromo2.component = dad.transitions[chromo2.component]
                     used2.append(chromo2.component)
+                    chromo2.prev_chromo = prevChromo2
+                    if prevChromo2:
+                        prevChromo2.next_chromo = chromo2
 
                     comps2.append(chromo2)
 
@@ -230,9 +235,10 @@ class GeneticAlgorithmSPA:
         orderedlist = sorted(self.genomas, key=lambda x: x.fitness, reverse=True)
         for i in range(self.TOP_BEST_TO_ADD):
             for j in range(self.NUM_BEST_TO_ADD):
-                sample = copy.deepcopy(orderedlist[i]).copy()
-                sample.changeZeroKind()
-                baby_genomes.append(sample)
+                genome = copy.deepcopy(orderedlist[i])
+                genome.components = genome.clone() #copy.deepcopy(orderedlist[i]).copy()
+                genome.changeZeroKind()
+                baby_genomes.append(genome)
 
         while len(baby_genomes) < self.population_size:
             mum = self.roulette_wheel_selection()

@@ -11,7 +11,7 @@ class Genome:
     def __init__(self, max_components=10, height_px=2048*SCREEN_RES, scale=1, skip_generation=False):
         self.components = list()
         self.transitions = {
-            Component.BLANK : Component.BANNER,
+            #Component.BLANK : Component.BANNER,
             Component.BANNER : Component.BIG_IMAGE,
             Component.BIG_IMAGE: Component.BIG_BUTTONS,
             Component.BIG_BUTTONS: Component.BIG_TITLE,
@@ -22,7 +22,7 @@ class Genome:
             Component.PRODUCT_FEATURES: Component.REVIEW,
             Component.REVIEW: Component.TEXT_PARAGRAPH,
             Component.TEXT_PARAGRAPH: Component.VIDEO,
-            Component.VIDEO: Component.BLANK
+            Component.VIDEO: Component.BANNER
         }
 
         self.fitness = 0.0
@@ -63,8 +63,8 @@ class Genome:
                 while kind == Component.HEADER or kind == Component.FOOTER:
                     kind = random.choice(list(Component))
 
-            if self.more_than(used, kind, 2):
-                kind = Component.BLANK
+            #if self.more_than(used, kind, 2):
+            #    kind = Component.BLANK
 
             if kind == Component.BANNER:
                 height = min(height, int(225*SCREEN_RES*self.scale))
@@ -149,12 +149,30 @@ class Genome:
 
     def copy(self):
         ncopied = list()
+        prev = None
         for c in self.components:
             newC = copy.deepcopy(c)
+            newC.prev_chromo = prev
+            if prev:
+                prev.next_chromo = newC
             ncopied.append(newC)
+            prev = newC
         self.components = ncopied
 
         return self
+
+    def clone(self):
+        ncopied = list()
+        prev = None
+        for c in self.components:
+            newC = copy.deepcopy(c)
+            newC.prev_chromo = prev
+            if prev:
+                prev.next_chromo = newC
+            ncopied.append(newC)
+            prev = newC
+
+        return ncopied
 
     def fusion(self, chromos, reposition=False):
         to_delete = []
@@ -172,7 +190,7 @@ class Genome:
         if reposition:
             # complete with blank blocks at the end
             for i in range(len(to_delete)):
-                chromo = Chromosome(Component.BLANK,
+                chromo = Chromosome(Component.BANNER, # BLANK
                                 top=self.screen_height,
                                 height_px=100,
                                 position= self.max_components - i,

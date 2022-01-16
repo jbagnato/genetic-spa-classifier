@@ -3,7 +3,7 @@ from enum import IntEnum
 
 class Component(IntEnum):
 #    OTHER = 1
-    BLANK = 2
+#    BLANK = 2
 #    NONE = 3
 
     HEADER = 100  # could include search bar and logo

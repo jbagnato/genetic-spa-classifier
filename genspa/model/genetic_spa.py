@@ -85,10 +85,11 @@ class GeneticAlgorithmSPA:
 
     def crossover(self, mum:Genome, dad:Genome) -> (Genome, Genome):
 
-        c1 = random.randint(0, min(len(mum.components), len(dad.components)))
-        c2 = random.randint(0, min(len(mum.components), len(dad.components)))
-
-        if ((random.randint(0, 100)/100) > self.crossover_rate) or (mum == dad) or (c1 == c2):
+        c1 = random.randint(0, min(len(mum.components), len(dad.components))-1)
+        c2 = random.randint(0, min(len(mum.components), len(dad.components))-1)
+        cc1 = mum.components[c1].component
+        cc2 = dad.components[c2].component
+        if ((random.randint(0, 100)/100) > self.crossover_rate) or (mum == dad) or (cc1 == cc2):
             return mum, dad
 
         baby1 = Genome(self.components_length, self.webpage.height, self.webpage.scale, skip_generation=True)
@@ -101,42 +102,25 @@ class GeneticAlgorithmSPA:
         prevChromo1=None
         prevChromo2=None
         for i in range(min(len(mum.components), len(dad.components))):
-            if i != c1 and i != c2:
-                chromo1 = copy.deepcopy(mum.components[i])
-                chromo1.prev_chromo = prevChromo1
-                if prevChromo1:
-                    prevChromo1.next_chromo = chromo1
-                comps1.append(chromo1)
-                lastTop1 += chromo1.height
-                prevChromo1 = chromo1
-                chromo2 = copy.deepcopy(dad.components[i])
-                chromo2.prev_chromo = prevChromo2
-                if prevChromo2:
-                    prevChromo2.next_chromo = chromo2
-                comps2.append(chromo2)
-                prevChromo2 = chromo2
-                lastTop2 += chromo2.height
-            else:
-                # need to update the prev and next chromosomas
-                # also have to adjust top and recalculate score
-                chromo1 = copy.deepcopy(dad.components[i])
-                chromo1.top = lastTop1
-                lastTop1 += chromo1.height
-                chromo1.score=-1  # reset score because the offset
-                if prevChromo1:
-                    prevChromo1.next_chromo=chromo1
-                chromo1.prev_chromo = prevChromo1
-                comps1.append(chromo1)
-                prevChromo1 = chromo1
-                chromo2 = copy.deepcopy(mum.components[i])
-                chromo2.top = lastTop2
-                lastTop2 += chromo2.height
-                chromo2.score=-1  # reset score because the offset
-                if prevChromo2:
-                    prevChromo2.next_chromo=chromo2
-                chromo2.prev_chromo = prevChromo2
-                comps2.append(chromo2)
-                prevChromo2 = chromo2
+            chromo1 = copy.deepcopy(mum.components[i])
+            chromo2 = copy.deepcopy(dad.components[i])
+            chromo1.prev_chromo = prevChromo1
+            if prevChromo1:
+                prevChromo1.next_chromo = chromo1
+            comps1.append(chromo1)
+            lastTop1 += chromo1.height
+            prevChromo1 = chromo1
+            chromo2.prev_chromo = prevChromo2
+            if prevChromo2:
+                prevChromo2.next_chromo = chromo2
+            comps2.append(chromo2)
+            prevChromo2 = chromo2
+            lastTop2 += chromo2.height
+
+            if i == c1:
+                chromo1.component = cc2
+            if i == c2:
+                chromo2.component = cc1
 
         baby1.components = comps1
         baby2.components = comps2
@@ -307,8 +291,8 @@ class GeneticAlgorithmSPA:
             baby1, baby2 = self.crossover(mum, dad)
             self.mutate(baby1, changeKind=False)
             self.mutate(baby2, changeKind=False)
-            baby1.changeZeroKind()
-            baby2.changeZeroKind()
+            #baby1.changeZeroKind()
+            #baby2.changeZeroKind()
             baby_genomes.append(baby1)
             baby_genomes.append(baby2)
 
